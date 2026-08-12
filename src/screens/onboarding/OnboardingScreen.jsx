@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Text, View, StyleSheet, Pressable, } from 'react-native';
 
 import Onboarding from 'react-native-onboarding-swiper';
@@ -19,31 +19,16 @@ const OnboardingScreen = () => {
 
     const navigation = useNavigation();
 
+    const [currentPage, setCurrentPage] = useState(0);
+    const onboardingRef = useRef(null);
+
+    const handleNext = () => {
+        onboardingRef.current?.goNext();
+    };
+
     const handleDone = () => {
-        navigation.replace('Login');
+        navigation.navigate("Login")
     };
-
-    const NextButton = ({ onPress }) => {
-        return (
-            <Button
-                varient="primary"
-                text={Strings.buttonText.continue}
-                style={styles.nextButton}
-                onPress={onPress}
-            />
-        );
-    };
-    const DoneButton = ({ onPress }) => {
-        return (
-            <Button
-                varient="primary"
-                text={Strings.buttonText.getStarted}
-                style={styles.nextButton}
-                onPress={onPress}
-            />
-        );
-    };
-
 
     const Dot = ({ selected }) => {
         return (
@@ -55,100 +40,82 @@ const OnboardingScreen = () => {
             />
         );
     };
-
-
-    const ImageCard = ({ children }) => {
-        return (
-            <View style={styles.imageCard}>
-                {children}
-            </View>
-        );
-    };
-
-
     return (
         <View style={styles.screen}>
             <Onboarding
+                ref={onboardingRef}
 
                 onDone={handleDone}
                 onSkip={handleDone}
 
                 showSkip={false}
+                showDone={false}
+                showNext={false}
 
-                NextButtonComponent={NextButton}
-                DoneButtonComponent={DoneButton}
+                pageIndexCallback={(index) => {
+                    setCurrentPage(index);
+                }}
 
                 DotComponent={Dot}
+
                 containerStyles={styles.container}
                 imageContainerStyles={styles.imageContainer}
-
-                titleStyles={styles.title}
-
-                subTitleStyles={styles.subtitle}
-
+                bottomBarColor={Colors.screenBackground}
 
                 pages={[
                     {
                         backgroundColor: Colors.screenBackground,
-
                         image: (
-                            <ImageCard>
+                            <View style={styles.imageCard}>
                                 <Container1
                                     height={IconStyling.onboardingIconHeight}
                                     width={IconStyling.onboardingIconWidth}
                                 />
-                            </ImageCard>
+                            </View>
                         ),
-
-                        title:
-                            Strings.onboardingTitle.title1,
-
-                        subtitle:
-                            Strings.onboardingSubtitle.subtitle1,
+                        title: (
+                            <Text style={styles.title}>{Strings.onboardingTitle.title1}</Text>
+                        ),
+                        subtitle: (
+                            <Text style={styles.subtitle}>{Strings.onboardingSubtitle.subtitle1}</Text>
+                        )
                     },
-
-
                     {
                         backgroundColor: Colors.screenBackground,
-
                         image: (
-                            <ImageCard>
+                            <View style={styles.imageCard}>
                                 <Container2
                                     height={IconStyling.onboardingIconHeight}
                                     width={IconStyling.onboardingIconWidth}
                                 />
-                            </ImageCard>
+                            </View>
                         ),
-
-                        title:
-                            Strings.onboardingTitle.title2,
-
-                        subtitle:
-                            Strings.onboardingSubtitle.subtitle2,
+                        title: (
+                            <Text style={styles.title}>{Strings.onboardingTitle.title2}</Text>
+                        ),
+                        subtitle: (
+                            <Text style={styles.subtitle}>{Strings.onboardingSubtitle.subtitle2}</Text>
+                        )
                     },
-
-
                     {
                         backgroundColor: Colors.screenBackground,
-
                         image: (
-                            <ImageCard>
+                            <View style={styles.imageCard}>
                                 <Container3
                                     height={IconStyling.onboardingIconHeight}
                                     width={IconStyling.onboardingIconWidth}
                                 />
-                            </ImageCard>
+                            </View>
                         ),
-
-                        title:
-                            Strings.onboardingTitle.title3,
-
-                        subtitle:
-                            Strings.onboardingSubtitle.subtitle3,
+                        title: (
+                            <Text style={styles.title}>{Strings.onboardingTitle.title3}</Text>
+                        ),
+                        subtitle: (
+                            <Text style={styles.subtitle}>{Strings.onboardingSubtitle.subtitle3}</Text>
+                        ),
                     },
                 ]}
             />
-
             <Pressable
                 onPress={handleDone}
                 style={styles.skipButton}
@@ -158,6 +125,20 @@ const OnboardingScreen = () => {
                 </Text>
             </Pressable>
 
+            <Button
+                varient="primary"
+                text={
+                    currentPage === 2
+                        ? Strings.buttonText.getStarted
+                        : Strings.buttonText.continue
+                }
+                style={styles.bottomButton}
+                onPress={
+                    currentPage === 2
+                        ? handleDone
+                        : handleNext
+                }
+            />
         </View>
     );
 };
@@ -183,20 +164,22 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: fontSizes.xxl,
-        fontFamily:Fonts.bold,
+        fontFamily: Fonts.bold,
         fontWeight: fontWeights.w700,
         color: Colors.textColor,
         textAlign: 'center',
-        width: Spacings.w75,
+        width: Spacings.halfWidth,
         alignSelf: 'center',
         marginBottom: Spacings.onboardingTitleSubtitle,
+        paddingVertical: Spacings.vlg,
     },
     subtitle: {
         fontSize: fontSizes.md,
         color: Colors.textColor,
         textAlign: 'center',
-        width: Spacings.halfWidth,
+        width: Spacings.w90,
         alignSelf: 'center',
+        lineHeight: fontSizes.md * 1.5,
     },
     skipButton: {
         position: 'absolute',
@@ -211,19 +194,13 @@ const styles = StyleSheet.create({
         color: Colors.textColor,
         fontWeight: fontWeights.w500,
     },
-    nextButton: {
-        width: Spacings.fullWidth,
-        height: Spacings.h45,
-        borderRadius:Spacings.mheading,
-        alignSelf:"flex-start",
-    },
     dot: {
         width: Numbers.num7,
         height: Numbers.num7,
         borderRadius: Spacings.mxs,
         backgroundColor: Colors.onboardingDot,
         marginHorizontal: Numbers.num4,
-        marginBottom:120
+        marginBottom: Numbers.num120,
     },
     selectedDot: {
         width: Spacings.title,
@@ -231,7 +208,16 @@ const styles = StyleSheet.create({
         borderRadius: Spacings.mxs,
         backgroundColor: Colors.primary,
     },
-
+    bottomButton: {
+        position: 'absolute',
+        bottom: Spacings.vxxl,
+        alignSelf: 'center',
+        width: Spacings.w90,
+        height: Spacings.h45,
+        borderRadius: Spacings.md,
+        backgroundColor: Colors.primary,
+        zIndex: Numbers.num20,
+    },
 });
 
 

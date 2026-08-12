@@ -2,6 +2,7 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters'
 
 export const Colors = {
     primary: '#2563EB',
+    gardient:'#7C3AED',
     
 
     white: '#FFFFFF',
@@ -9,6 +10,8 @@ export const Colors = {
     screenBackground: '#F8FAFC',
 
     textColor: '#111827',
+
+    danger : '#EF4444',
 
     onboardingDot :'#D7E3F7'
 }
@@ -53,6 +56,7 @@ export const Spacings = {
     vheading: verticalScale(28),
 
     varrowSize:verticalScale(36),
+    v40:verticalScale(40),
 
     // constant styling
     mxs: moderateScale(10),
@@ -72,6 +76,10 @@ export const Spacings = {
     fullWidth :'100%',
     halfWidth:'50%',
     w75:'75%',
+    w90:'90%',
+    w15 : '15%',
+    w10:'10%',
+    w45:'45%',
 
     //height
     h45:45,
@@ -93,6 +101,13 @@ export const Numbers = {
     num120:120,
     num7: 7,
     num4:4,
+    num20 : 20,
+    num90 : 90,
+
+    //opacity
+    p1:1,
+    p5:0.5,
+    p2 : 0.2,
 }
 export const IconStyling = {
     onboardingIconHeight:160,

@@ -12,7 +12,43 @@ export const Strings = {
     },
     buttonText :{
         skip:'Skip',
-        continue:'Continue',
-        getStarted : 'Get Started'
+        continue:'Continue → ',
+        getStarted : 'Get Started → ',
+        signIn :"Sign In",
+        createAccount : "Create Account",
+        sendResetCode : "Send Reset Code",
+        verifyOTP : "Verify OTP",
+        google : "Google",
+        github : 'GitHub',
+    },
+
+    taskFlow : 'TaskFlow',
+    appSlogen :'Manage, Build, Deliver',
+
+    welcomeBack :'Welcome back',
+    signInTaskflowText :"Sign In to your Taskflow Account",
+
+    forgotPassword :'Forgot Password?',
+    doNotHavaAccount : "Dont have an  account?",
+    alreadyHaveAccount : "Already have an account?",
+
+    inputLabel : {
+        email:"EMAIL",
+        password : "PASSWORD",
+        firstName : "FIRST NAME",
+        lastName : "LAST NAME",
+        phone : 'PHONE',
+        company : 'COMPANY',
+        cnfmPassword :'CONFIRM PASSWORD'
+    },
+
+    placeholders : {
+        email:'you@company.com',
+        phone : '+1 555 000 0000',
+        company : 'Acme Corp',
+        password : '••••••••',
+        firstName : "Alex",
+        lastName :"Chen",
+
     }
 }
