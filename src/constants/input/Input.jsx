@@ -28,7 +28,7 @@ function Input({
   leftIcon
 }) {
 
-  const [hidePassword, setHidePassword] = useState(secureTextEntry);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
     <View style={[styles.container, style]}>
@@ -38,13 +38,16 @@ function Input({
           {leftIcon}
         </View>
       )}
+
       <TextInput
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
         placeholderTextColor={placeholderTextColor}
         keyboardType={keyboardType}
-        secureTextEntry={hidePassword}
+
+        secureTextEntry={secureTextEntry && !isPasswordVisible}
+
         multiline={multiline}
         numberOfLines={numberOfLines}
         textAlignVertical={textAlignVertical}
@@ -58,9 +61,9 @@ function Input({
         <TouchableOpacity
           style={styles.iconContainer}
           activeOpacity={0.8}
-          onPress={() => setHidePassword(!hidePassword)}
+          onPress={() => setIsPasswordVisible(prev => !prev)}
         >
-          <EyeIcon width={20} height={20} />
+          <EyeIcon width={20} height={20} visible={isPasswordVisible} />
         </TouchableOpacity>
       )}
 
@@ -88,7 +91,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: Spacings.mmd,
-    color: Colors.black,
+    color: Colors.textColor,
     fontFamily: Fonts.regular,
   },
 

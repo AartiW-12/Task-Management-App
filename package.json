@@ -21,7 +21,7 @@
     "react-native": "0.86.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-onboarding-swiper": "^1.4.0",
-    "react-native-safe-area-context": "^5.5.2",
+    "react-native-safe-area-context": "^5.9.0",
     "react-native-screens": "^4.27.0",
     "react-native-size-matters": "^0.4.2",
     "react-native-svg": "^15.15.5"

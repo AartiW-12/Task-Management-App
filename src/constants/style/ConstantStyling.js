@@ -3,15 +3,20 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters'
 export const Colors = {
     primary: '#2563EB',
     gardient:'#7C3AED',
+    inputBackground: '#F1F5F9',
     
 
     white: '#FFFFFF',
 
+
     screenBackground: '#F8FAFC',
 
     textColor: '#111827',
-
+    gray : '#E2E8F0',
+    darkGray : '#94979a',
+    sucess :  '#16C784',
     danger : '#EF4444',
+
 
     onboardingDot :'#D7E3F7'
 }
@@ -32,6 +37,7 @@ export const fontSizes = {
 
 export const Spacings = {
     //horizantal scaling
+    xxs : scale(5),
     xs: scale(10),
     sm: scale(12),
     md: scale(14),
@@ -57,8 +63,10 @@ export const Spacings = {
 
     varrowSize:verticalScale(36),
     v40:verticalScale(40),
+    v47: verticalScale(47),
 
     // constant styling
+    mxxs : moderateScale(5),
     mxs: moderateScale(10),
     msm: moderateScale(12),
     mmd: moderateScale(14),
@@ -80,6 +88,9 @@ export const Spacings = {
     w15 : '15%',
     w10:'10%',
     w45:'45%',
+    w48:'48%',
+    w85:'85%',
+    w38: '38%',
 
     //height
     h45:45,
@@ -103,6 +114,7 @@ export const Numbers = {
     num4:4,
     num20 : 20,
     num90 : 90,
+    num16 : 16,
 
     //opacity
     p1:1,

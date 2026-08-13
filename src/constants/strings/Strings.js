@@ -20,6 +20,7 @@ export const Strings = {
         verifyOTP : "Verify OTP",
         google : "Google",
         github : 'GitHub',
+        resetPassword : "Reset "
     },
 
     taskFlow : 'TaskFlow',
@@ -31,7 +32,20 @@ export const Strings = {
     forgotPassword :'Forgot Password?',
     doNotHavaAccount : "Dont have an  account?",
     alreadyHaveAccount : "Already have an account?",
-
+    termsConditionsText : "I agree to the ",
+    terms : 'Terms of Service',
+    privacyPolicy : 'Privacy Policy',
+    andtext : 'and',
+    resetPassword : 'Reset Password',
+    resetPasswordInfo : 'Enter your email and we ll send a verification code to reset your password.',
+    sendResetCode : 'Send Reset Code',
+    backToText : "Back To",
+    enterOTPText : 'Enter OTP Code',
+    sixDigitCode : 'We sent a 6-digit code to',
+    didntReceiveCode : "Didn't receive code?",
+    createNewPassword : "Create New Password",
+    newPassword : "NEW PASSWORD",
+    resetPasswordCondition : 'Must be different from previously used passwords.',
     inputLabel : {
         email:"EMAIL",
         password : "PASSWORD",
@@ -39,7 +53,8 @@ export const Strings = {
         lastName : "LAST NAME",
         phone : 'PHONE',
         company : 'COMPANY',
-        cnfmPassword :'CONFIRM PASSWORD'
+        cnfmPassword :'CONFIRM PASSWORD',
+        address : 'ADDRESS',
     },
 
     placeholders : {
@@ -50,5 +65,10 @@ export const Strings = {
         firstName : "Alex",
         lastName :"Chen",
 
+    },
+    passwordConditions : {
+        lengthValidation : 'At least 8 characters',
+        uppercaseCondition : 'One uppercase letter',
+        oneNumberOrSymbol :'One number or symbol',
     }
 }

@@ -13,7 +13,7 @@ import { Strings } from '../../constants/strings/Strings'
 
 const SplashScreen = () => {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             {/* <View style={styles.splashBackground}> */}
             <LinearGradient
                 colors={[Colors.primary, Colors.gardient]}
@@ -22,7 +22,7 @@ const SplashScreen = () => {
                 style={styles.splashBackground}
             >
                 <View style={styles.spiralContainer}>
-                    <SpiralIcon width={'500'} height="900" />
+                    <SpiralIcon width={'400'} height="500" />
                 </View>
 
                 <View style={styles.content}>
@@ -38,7 +38,7 @@ const SplashScreen = () => {
                 </View>
             </LinearGradient>
             {/* </View> */}
-        </SafeAreaView>
+        </View>
     )
 }
 

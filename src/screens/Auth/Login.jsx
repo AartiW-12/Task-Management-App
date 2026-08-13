@@ -35,7 +35,7 @@ const Login = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         style={CommonStyles.flex1}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -82,7 +82,7 @@ const Login = () => {
               secureTextEntry={true}
               leftIcon={<LockIcon width={15} height={15} />}
             />
-            <Text style={styles.activeLink}>{Strings.forgotPassword}</Text>
+            <Text style={styles.activeLink} onPress={() => navigation.navigate("ForgotPassword")}>{Strings.forgotPassword}</Text>
             <Button
               text={Strings.buttonText.signIn}
               onPress={handleSignIn}
@@ -101,6 +101,7 @@ const Login = () => {
                 style={styles.signInOptionButton}
                 varient="secondary"
                 icon={<GoogleIcon width={20} height={20} color={Colors.danger} />}
+                textStyle={styles.signInOptionButtonTextStyle}
               />
 
               <Button
@@ -109,6 +110,7 @@ const Login = () => {
                 style={styles.signInOptionButton}
                 varient="secondary"
                 icon={<GoogleIcon width={20} height={20} color={Colors.textColor} />}
+                textStyle={styles.signInOptionButtonTextStyle}
               />
             </View>
             <Text style={styles.signInOptionText}>{Strings.doNotHavaAccount} <Text style={styles.activeLink} onPress={() => navigation.navigate("Register")}>{Strings.buttonText.createAccount}</Text></Text>
@@ -118,7 +120,7 @@ const Login = () => {
       </KeyboardAvoidingView>
 
 
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.screenBackground,
-    paddingTop: Spacings.vmd
+    paddingTop: Spacings.vxxl
   },
   scrollContainer: {
     flexGrow: 1,
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacings.vxs
   },
   inputContainer: {
-    width: '85%',
+    width: Spacings.w85,
     justifyContent: 'center',
   },
   inputLabel: {
@@ -185,13 +187,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     paddingVertical: Spacings.vsm,
     color: Colors.primary,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.semiBold,
     fontSize: fontSizes.sm
   },
   btn: {
-    width: Spacings.w90,
+    width: Spacings.fullWidth,
     alignSelf: 'center',
     marginLeft: Spacings.w15
+  },
+  btnTextStyle:{
+    fontFamily:Fonts.regular,
   },
   separator: {
     flexDirection: 'row',
@@ -245,5 +250,9 @@ const styles = StyleSheet.create({
     marginLeft: Spacings.w15,
     paddingTop: Spacings.vxs
   },
+  signInOptionButtonTextStyle : {
+    fontFamily:Fonts.semiBold,
+    color:Colors.textColor,
+  }
 });
 export default Login
