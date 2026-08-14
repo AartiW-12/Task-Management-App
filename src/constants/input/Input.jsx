@@ -13,6 +13,8 @@ import {
 } from '../style/ConstantStyling';
 
 import EyeIcon from '../../assets/images/Icons/EyeIcon.svg';
+import ClosedEye from '../../assets/images/Icons/ClosedEye.svg'
+
 
 function Input({
   placeholder,
@@ -63,7 +65,11 @@ function Input({
           activeOpacity={0.8}
           onPress={() => setIsPasswordVisible(prev => !prev)}
         >
-          <EyeIcon width={20} height={20} visible={isPasswordVisible} />
+          {isPasswordVisible ?
+            <EyeIcon width={20} height={20} />
+            :
+            <ClosedEye width={20} height={20} />
+          }
         </TouchableOpacity>
       )}
 

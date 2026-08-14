@@ -22,7 +22,7 @@ const SplashScreen = () => {
                 style={styles.splashBackground}
             >
                 <View style={styles.spiralContainer}>
-                    <SpiralIcon width={'400'} height="500" />
+                    <SpiralIcon width={'500'} height="900" />
                 </View>
 
                 <View style={styles.content}>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     },
 
     iconContainer: {
-        paddingTop: Spacings.vmd,
+        paddingTop: Spacings.vsm,
         alignItems: 'center',
     },
 
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
         fontSize: fontSizes.heading,
         color: Colors.white,
         textAlign: 'center',
+        paddingTop:Spacings.vsm
     },
 
     appSlogen: {

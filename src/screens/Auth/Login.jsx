@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Platform } from 'react-native'
+import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Platform, Alert } from 'react-native'
 import React, { useState } from 'react'
 
 import TaskFlowIcon from '../../assets/images/Icons/TaskFlowIcon.svg'
@@ -6,7 +6,6 @@ import { Strings } from '../../constants/strings/Strings'
 import LinearGradient from 'react-native-linear-gradient'
 import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from '../../constants/style/ConstantStyling'
 import { CommonStyles } from '../../constants/style/CommonStyles'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 import Input from '../../constants/input/Input'
 import Button from '../../constants/button/Button'
@@ -15,6 +14,7 @@ import GoogleIcon from '../../assets/images/Icons/Google.svg'
 import LockIcon from '../../assets/images/Icons/LockIcon.svg'
 import MailIcon from '../../assets/images/Icons/MailIcon.svg'
 import { useNavigation } from '@react-navigation/native'
+import { googleSignIn, loginUser } from '../../services/authServices'
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -22,12 +22,42 @@ const Login = () => {
 
   const navigation = useNavigation()
 
-  const handleSignIn = () => {
-    console.log("SIGN IN")
+  const handleSignIn = async () => {
+    try {
+      if (!email) {
+        Alert.alert("Email Required")
+        return
+      }
+      if (!password) {
+        Alert.alert("Password Required")
+        return
+      }
+      const user = await loginUser(email, password)
+      Alert.alert("LOGIN SUCESS")
+    } catch (error) {
+      Alert.alert('LOGIN FAILED:', error.code)
+
+      if (error.code === 'auth/invalid-credential') {
+        Alert.alert('Invalid email or password')
+      }
+
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert('User does not exist')
+      }
+
+      if (error.code === 'auth/wrong-password') {
+        Alert.alert('Wrong password')
+      }
+    }
   }
 
-  const handleGoogleSignIn = () => {
-
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await googleSignIn()
+      Alert.alert("GOOGLE LOGIN SUCESS", user)
+    } catch (err) {
+      Alert.alert("GOOGLE LOGIN FAILED", err.message || err.code)
+    }
   }
 
   const handleGithubSignIn = () => {
@@ -195,8 +225,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginLeft: Spacings.w15
   },
-  btnTextStyle:{
-    fontFamily:Fonts.regular,
+  btnTextStyle: {
+    fontFamily: Fonts.regular,
   },
   separator: {
     flexDirection: 'row',
@@ -250,9 +280,9 @@ const styles = StyleSheet.create({
     marginLeft: Spacings.w15,
     paddingTop: Spacings.vxs
   },
-  signInOptionButtonTextStyle : {
-    fontFamily:Fonts.semiBold,
-    color:Colors.textColor,
+  signInOptionButtonTextStyle: {
+    fontFamily: Fonts.semiBold,
+    color: Colors.textColor,
   }
 });
 export default Login

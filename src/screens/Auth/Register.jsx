@@ -30,50 +30,54 @@ const Register = () => {
   const [company, setCompany] = useState("")
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
+  //password validation rules
+  const hasMinLength = password.length >= 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasNumberOrSymbol = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(password)
+
   const handleSignUp = async () => {
     try {
 
       if (!fname.trim()) {
-        Alert.alert('First name is required')
+        Alert.alert(Strings.passwordValidationRules.firstName)
         return
       }
 
       if (!lName.trim()) {
-        Alert.alert('Last name is required')
+        Alert.alert(Strings.passwordValidationRules.lastName)
         return
       }
 
       if (!email.trim()) {
-        Alert.alert('Email is required')
+        Alert.alert(Strings.passwordValidationRules.email)
         return
       }
 
       if (!phone.trim()) {
-        Alert.alert('Phone is required')
+        Alert.alert(Strings.passwordValidationRules.phone)
         return
       }
 
       if (!company.trim()) {
-        Alert.alert('Company is required')
+        Alert.alert(Strings.passwordValidationRules.company)
         return
       }
 
       if (!pass) {
-        Alert.alert('Password is required')
+        Alert.alert(Strings.passwordValidationRules.password)
         return
       }
 
       if (pass !== cnfmPass) {
-        Alert.alert('Passwords do not match')
+        Alert.alert(Strings.passwordValidationRules.passwordNotMatch)
         return
       }
 
       if (!isTermsAccepted) {
-        Alert.alert('Please accept terms and conditions')
+        Alert.alert(Strings.passwordValidationRules.termsConditions)
         return
       }
 
-      // 1. Create Firebase Authentication user
       const user = await registerUser(
         email.trim(),
         pass
@@ -81,7 +85,6 @@ const Register = () => {
 
       Alert.alert('AUTH USER CREATED:', user.uid)
 
-      // 2. Create Firestore user profile
       await createUserProfile(user.uid, {
         firstName: fname.trim(),
         lastName: lName.trim(),
@@ -171,6 +174,7 @@ const Register = () => {
               leftIcon={<LockIcon height={15} width={15} />}
               style={styles.input}
               placeholderTextColor={Colors.textColor}
+              secureTextEntry={true}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.cnfmPassword}</Text>
             <Input
@@ -180,6 +184,7 @@ const Register = () => {
               leftIcon={<LockIcon height={15} width={15} />}
               style={styles.input}
               placeholderTextColor={Colors.textColor}
+              secureTextEntry={true}
             />
           </View>
           <View style={styles.checkboxContainer}>

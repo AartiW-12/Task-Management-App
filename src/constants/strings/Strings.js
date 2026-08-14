@@ -70,5 +70,21 @@ export const Strings = {
         lengthValidation : 'At least 8 characters',
         uppercaseCondition : 'One uppercase letter',
         oneNumberOrSymbol :'One number or symbol',
+    },
+    passwordValidationRules : {
+        required : {
+            email : "Email is Required",
+            password : "Password Required",
+            firstName : "First name is required",
+            lastName : 'Last name is required',
+            phone : 'Mobile Number is required',
+            company : 'Company Name is required',
+            termsConditions : 'Please accept terms and conditions',
+            passwordNotMatch : 'Passwords do not match'
+        },
+        successMessages : {
+
+        }
+
     }
 }

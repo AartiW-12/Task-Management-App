@@ -11,7 +11,7 @@ const AppNavigator = () => {
     useEffect(() => {
         setTimeout(() => {
             setDisplay(false)
-        }, 5000);
+        }, 2000);
     },[])
     if(display){
         return <SplashScreen />

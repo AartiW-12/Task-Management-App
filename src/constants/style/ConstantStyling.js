@@ -122,6 +122,6 @@ export const Numbers = {
     p2 : 0.2,
 }
 export const IconStyling = {
-    onboardingIconHeight:160,
-    onboardingIconWidth: 160,
+    onboardingIconHeight:100,
+    onboardingIconWidth: 100,
 }
