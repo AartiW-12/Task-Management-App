@@ -31,9 +31,9 @@ const Register = () => {
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
   //password validation rules
-  const hasMinLength = password.length >= 8
-  const hasUppercase = /[A-Z]/.test(password)
-  const hasNumberOrSymbol = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(password)
+  const hasMinLength = pass.length >= 8
+  const hasUppercase = /[A-Z]/.test(pass)
+  const hasNumberOrSymbol = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(pass)
 
   const handleSignUp = async () => {
     try {
@@ -225,8 +225,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: Numbers.num120,
     backgroundColor: Colors.screenBackground,
-    // backgroundColor:"red",
-
+    paddingTop:Numbers.num20
   },
   nameContainer: {
     width: Spacings.w85,

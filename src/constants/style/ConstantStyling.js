@@ -4,6 +4,7 @@ export const Colors = {
     primary: '#2563EB',
     gardient:'#7C3AED',
     inputBackground: '#F1F5F9',
+    priorityBadge : "#FFF1D2",
     
 
     white: '#FFFFFF',
@@ -94,11 +95,14 @@ export const Spacings = {
 
     //height
     h45:45,
+    h65:65,
+    h110 : 110,
 }
 
 export const fontWeights = {
     w700 : '700',
     w500 : '500',
+    w600:'600',
 }
 
 export const Fonts = {
@@ -115,11 +119,13 @@ export const Numbers = {
     num20 : 20,
     num90 : 90,
     num16 : 16,
+    num34 : 34,
 
     //opacity
     p1:1,
     p5:0.5,
     p2 : 0.2,
+    zp1:0.1,
 }
 export const IconStyling = {
     onboardingIconHeight:100,

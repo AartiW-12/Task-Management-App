@@ -54,9 +54,21 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       const user = await googleSignIn()
-      Alert.alert("GOOGLE LOGIN SUCESS", user)
+
+      console.log("GOOGLE USER:", user)
+      console.log("NAME:", user.displayName)
+      console.log("EMAIL:", user.email)
+
+      Alert.alert(
+        "GOOGLE LOGIN SUCCESS",
+        `Welcome ${user.displayName || user.email}`
+      )
+
     } catch (err) {
-      Alert.alert("GOOGLE LOGIN FAILED", err.message || err.code)
+      Alert.alert(
+        "GOOGLE LOGIN FAILED",
+        err.message || err.code
+      )
     }
   }
 
@@ -148,8 +160,6 @@ const Login = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-
     </View>
   )
 }
@@ -196,11 +206,11 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: Spacings.w85,
     justifyContent: 'center',
+    alignSelf: 'center'
   },
   inputLabel: {
     paddingVertical: Spacings.vsm,
     alignSelf: 'flex-start',
-    marginLeft: Spacings.w10,
     fontFamily: Fonts.regular,
     fontSize: fontSizes.sm,
     paddingTop: Spacings.v
@@ -211,7 +221,6 @@ const styles = StyleSheet.create({
     opacity: Numbers.p5,
     alignSelf: 'center',
     borderRadius: Spacings.mxl,
-    marginLeft: Spacings.w15,
   },
   activeLink: {
     alignSelf: 'flex-end',
@@ -223,7 +232,6 @@ const styles = StyleSheet.create({
   btn: {
     width: Spacings.fullWidth,
     alignSelf: 'center',
-    marginLeft: Spacings.w15
   },
   btnTextStyle: {
     fontFamily: Fonts.regular,
@@ -240,7 +248,6 @@ const styles = StyleSheet.create({
     height: Numbers.p1,
     backgroundColor: Colors.textColor,
     opacity: Numbers.p2,
-    marginLeft: Spacings.w15
   },
   divider: {
     flex: 1,
@@ -262,13 +269,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     gap: Spacings.vmd,
-    marginLeft: Spacings.w15,
-
   },
 
   signInOptionButton: {
     width: Spacings.w45,
-    borderWidth: Numbers.p2
+    borderWidth: Numbers.p2,
+    backgroundColor: Colors.white,
+    elevation: 0,
   },
 
   signInOptionText: {
@@ -277,7 +284,6 @@ const styles = StyleSheet.create({
     color: Colors.textColor,
     textAlign: 'center',
     marginTop: Spacings.vmd,
-    marginLeft: Spacings.w15,
     paddingTop: Spacings.vxs
   },
   signInOptionButtonTextStyle: {

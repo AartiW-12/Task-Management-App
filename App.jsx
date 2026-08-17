@@ -19,9 +19,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {/* <SafeAreaView style={CommonStyles.flex1}> */}
           <AppNavigator />
-        {/* </SafeAreaView> */}
       </NavigationContainer>
       
     </SafeAreaProvider>

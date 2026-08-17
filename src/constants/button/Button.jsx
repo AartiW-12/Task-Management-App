@@ -40,12 +40,15 @@ const Button = ({
 
 const styles = StyleSheet.create({
     btn: {
-        width: '100%',
-        height: 45,
-        borderRadius: Spacings.lg,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+    width: '100%',
+    height: 45,
+    borderRadius: Spacings.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    shadowColor: Colors.primary,
+    elevation: 9,
+},
 
     primary: {
         backgroundColor: Colors.primary,

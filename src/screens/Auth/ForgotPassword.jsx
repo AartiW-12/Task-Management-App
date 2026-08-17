@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors, Fonts, fontSizes, Numbers, Spacings, } from '../../constants/style/ConstantStyling';
 import { Strings } from '../../constants/strings/Strings';
@@ -13,78 +12,58 @@ import Input from '../../constants/input/Input';
 import Button from '../../constants/button/Button';
 import { useNavigation } from '@react-navigation/native';
 import { resetPassword } from '../../services/authServices';
-import { auth } from '../../firebase/firebaseConfig';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
 
   const navigation = useNavigation()
 
-  const handleResetCode = async() => {
-    if (!email.trim()) {
-      Alert.alert(Strings.passwordValidationRules.required.email)
+  const handleResetCode = async () => {
+    const cleanEmail = email.trim().toLowerCase()
+
+    if (!cleanEmail) {
+      Alert.alert(
+        Strings.errorMessages.error,
+        Strings.errorMessages.emailRequired
+      )
       return
     }
-
     try {
-      await resetPassword(email.trim())
-
+      await resetPassword(cleanEmail)
       Alert.alert(
-        'Check Your Email',
-        `If an account exists for ${email}, a password reset link has been sent. Please check your inbox.`,
+        Strings.successMessages.checkEmail,
+        Strings.successMessages.resetLinkSent + ` ${cleanEmail} ` + Strings.successMessages.checkEmail,
         [
           {
-            text: 'Back to Sign In',
+            text: Strings.backToText + Strings.buttonText.signIn,
             onPress: () => navigation.navigate('Login'),
           },
         ]
-      );
+      )
     } catch (error) {
-      console.log(error)
       if (error.code === 'auth/invalid-email') {
-        Alert.alert('Invalid email address')
+        Alert.alert(
+          Strings.errorMessages.invalidEmail,
+        )
       } else if (error.code === 'auth/user-not-found') {
-        Alert.alert(error.code)
+
+        Alert.alert(
+          Strings.errorMessages.noAccountFound,
+          Strings.errorMessages.userNotExist
+        )
+      } else if (error.code === 'auth/too-many-requests') {
+        Alert.alert(
+          Strings.errorMessages.manyAttempts,
+          Strings.errorMessages.manyRequestError
+        )
       } else {
-        Alert.alert('Something went wrong. Please try again.')
+        Alert.alert(
+          Strings.errorMessages.error,
+          Strings.errorMessages.tryAgainMessage
+        )
       }
     }
   }
-
-  // const handleResetCode = async () => {
-  //   const cleanEmail = email.trim().toLowerCase();
-
-  //   if (!cleanEmail) {
-  //     Alert.alert('Error', 'Please enter your email address.');
-  //     return;
-  //   }
-
-  //   try {
-  //     await resetPassword(cleanEmail);
-
-  //     Alert.alert(
-  //       'Check Your Email',
-  //       `If an account exists for ${cleanEmail}, a password reset link has been sent. Please check your inbox.`,
-  //       [
-  //         {
-  //           text: 'Back to Sign In',
-  //           onPress: () => navigation.navigate('Login'),
-  //         },
-  //       ]
-  //     );
-  //   } catch (error) {
-  //     console.log('Reset password error:', error);
-
-  //     if (error.code === 'auth/invalid-email') {
-  //       Alert.alert('Error', 'Please enter a valid email address.');
-  //     } else if (error.code === 'auth/too-many-requests') {
-  //       Alert.alert('Error', 'Too many attempts. Please try again later.');
-  //     } else {
-  //       Alert.alert('Error', 'Failed to send reset email. Please try again.');
-  //     }
-  //   }
-  // };
-
 
 
   return (
