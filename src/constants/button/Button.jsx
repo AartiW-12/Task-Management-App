@@ -40,7 +40,7 @@ const Button = ({
 
 const styles = StyleSheet.create({
     btn: {
-    width: '100%',
+    width:Spacings.fullWidth,
     height: 45,
     borderRadius: Spacings.lg,
     justifyContent: 'center',

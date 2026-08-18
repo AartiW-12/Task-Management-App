@@ -110,7 +110,6 @@ const Login = () => {
               placeholder={Strings.placeholders.email}
               value={email}
               onChangeText={setEmail}
-              placeholderTextColor={Colors.textColor}
               style={styles.input}
               leftIcon={<MailIcon width={15} height={15} />}
             />
@@ -119,7 +118,6 @@ const Login = () => {
               placeholder={Strings.placeholders.password}
               value={password}
               onChangeText={setPassword}
-              placeholderTextColor={Colors.textColor}
               style={styles.input}
               secureTextEntry={true}
               leftIcon={<LockIcon width={15} height={15} />}
@@ -218,9 +216,9 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: Numbers.p2,
     borderColor: Colors.textColor,
-    opacity: Numbers.p5,
     alignSelf: 'center',
     borderRadius: Spacings.mxl,
+    fontFamily:Fonts.regular
   },
   activeLink: {
     alignSelf: 'flex-end',
@@ -239,7 +237,7 @@ const styles = StyleSheet.create({
   separator: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    width:Spacings.fullWidth,
     marginVertical: Spacings.vmd,
   },
 

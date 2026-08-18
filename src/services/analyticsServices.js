@@ -23,3 +23,25 @@ export const logDashboardEvent = async (eventName, params = {}) => {
         console.log("Analytics event error:", error);
     }
 };
+
+// Screen View
+export const logAppScreenView = async (screenName, screenClass) => {
+    try {
+        await logScreenView(analytics, {
+            screen_name: screenName,
+            screen_class: screenClass,
+        });
+    } catch (error) {
+        console.log("Analytics screen error:", error);
+    }
+};
+
+
+// Custom Event
+export const logAppEvent = async (eventName, params = {}) => {
+    try {
+        await logEvent(analytics, eventName, params);
+    } catch (error) {
+        console.log("Analytics event error:", error);
+    }
+};

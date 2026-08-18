@@ -9,7 +9,6 @@ import {
     Alert,
 } from "react-native";
 
-// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import {
     moderateScale,
@@ -23,7 +22,7 @@ import Svg, { Path, Defs, LinearGradient, Stop, Line, } from "react-native-svg";
 import { logDashboardEvent, logDashboardView } from "../../services/analyticsServices";
 import { logoutUser } from "../../services/authServices";
 import { auth, db } from "../../firebase/firebaseConfig";
-import { Colors, fontSizes, fontWeights, Numbers, Spacings } from "../../constants/style/ConstantStyling";
+import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from "../../constants/style/ConstantStyling";
 import Header from '../../components/header/Header'
 
 import NotificationIcon from '../../assets/images/Icons/NotificationIcon.svg'
@@ -33,6 +32,9 @@ import TasksIcon from '../../assets/images/Icons/TasksIcon.svg'
 import PendingIcon from '../../assets/images/Icons/PendingIcon.svg'
 import DoneIcon from '../../assets/images/Icons/DoneIcon.svg'
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { Strings } from "../../constants/strings/Strings";
+import StatusBadge from "../../components/statusBadge/StatusBadge";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const dashboardData = {
     user: {
@@ -108,20 +110,6 @@ const dashboardData = {
             priority: "High",
             icon: ProjectIcon,
         },
-        {
-            id: "project_2",
-            name: "Website Development",
-            progress: 45,
-            priority: "Medium",
-            icon: ProjectIcon,
-        },
-        {
-            id: "project_3",
-            name: "Marketing Campaign",
-            progress: 82,
-            priority: "High",
-            icon: ProjectIcon,
-        },
     ],
 };
 
@@ -163,7 +151,7 @@ const Dashboard = ({ navigation }) => {
                         photoURL: user.photoURL || '',
                     })
 
-                    console.log("Using Firebase Auth profile:",user.displayName)
+                    console.log("Using Firebase Auth profile:", user.displayName)
                 }
 
             } catch (err) {
@@ -192,11 +180,11 @@ const Dashboard = ({ navigation }) => {
         });
 
         if (item.id === "projects") {
-            // navigation.navigate("Projects");
+            navigation.navigate("Projects");
         }
 
         if (item.id === "tasks") {
-            // navigation.navigate("Tasks");
+            navigation.navigate("Tasks");
         }
     };
 
@@ -206,9 +194,9 @@ const Dashboard = ({ navigation }) => {
             project_name: project.name,
         });
 
-        // navigation.navigate("ProjectDetails", {
-        //     projectId: project.id,
-        // });
+        navigation.navigate("ProjectDetails", {
+            projectId: project.id,
+        });
     };
 
     const handleLogout = async () => {
@@ -267,13 +255,12 @@ const Dashboard = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
 
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* Header */}
                 <View style={styles.header}>
                     <View style={styles.profileSection}>
                         <View style={styles.avatar}>
@@ -313,83 +300,20 @@ const Dashboard = ({ navigation }) => {
                             // onPress={onNotificationPress}
                             activeOpacity={0.7}
                         >
-
                             <NotificationIcon
                                 width={moderateScale(18)}
                                 height={moderateScale(18)}
                             />
                             <View style={styles.notificationDot} />
-
                         </TouchableOpacity>
-
                     </View>
-
                 </View>
-
-                {/* Statistics */}
-                {/* <View style={styles.statisticsContainer}>
-
-                    {dashboardData.statistics.map((item) => (
-
-                        <TouchableOpacity
-                            key={item.id}
-                            style={styles.statCard}
-                            activeOpacity={0.8}
-                            onPress={() => handleStatisticPress(item)}
-                        >
-
-                            <View style={styles.statTopRow}>
-
-                                <View
-                                    style={[
-                                        styles.statIcon,
-                                        {
-                                            backgroundColor:
-                                                item.iconBackground,
-                                        },
-                                    ]}
-                                >
-                                    <MaterialCommunityIcons
-                                        name={item.icon}
-                                        size={moderateScale(19)}
-                                        color={item.iconColor}
-                                    />
-                                </View>
-
-                                <Text
-                                    style={[
-                                        styles.changeText,
-                                        item.changeType === "negative" &&
-                                        styles.negativeChange,
-                                    ]}
-                                >
-                                    {item.change > 0 ? "+" : ""}
-                                    {item.change}
-                                </Text>
-
-                            </View>
-
-                            <Text style={styles.statValue}>
-                                {item.value}
-                            </Text>
-
-                            <Text style={styles.statTitle}>
-                                {item.title}
-                            </Text>
-
-                        </TouchableOpacity>
-
-                    ))}
-
-                </View> */}
-                {/* Statistics */}
                 <View style={styles.statisticsContainer}>
 
                     {dashboardData.statistics.map(renderCategoryCard)}
 
                 </View>
 
-                {/* Weekly Progress */}
                 <View style={styles.progressCard}>
 
                     <Text style={styles.sectionTitle}>
@@ -398,7 +322,6 @@ const Dashboard = ({ navigation }) => {
 
                     <View style={styles.chartContainer}>
 
-                        {/* Y Axis */}
                         <View style={styles.chartYAxis}>
 
                             <Text style={styles.axisText}>20</Text>
@@ -409,7 +332,6 @@ const Dashboard = ({ navigation }) => {
 
                         </View>
 
-                        {/* Chart */}
                         <View style={styles.chartArea}>
 
                             <Svg
@@ -421,7 +343,6 @@ const Dashboard = ({ navigation }) => {
 
                                 <Defs>
 
-                                    {/* Purple gradient for chart area */}
                                     <LinearGradient
                                         id="chartGradient"
                                         x1="0"
@@ -446,7 +367,6 @@ const Dashboard = ({ navigation }) => {
 
                                 </Defs>
 
-                                {/* Horizontal grid lines */}
 
                                 <Line
                                     x1="0"
@@ -498,7 +418,6 @@ const Dashboard = ({ navigation }) => {
                                     strokeDasharray="6 6"
                                 />
 
-                                {/* Filled area */}
 
                                 <Path
                                     d="
@@ -535,8 +454,6 @@ const Dashboard = ({ navigation }) => {
                                     fill="url(#chartGradient)"
                                 />
 
-                                {/* Smooth purple line */}
-
                                 <Path
                                     d="
                     M 0 144
@@ -571,15 +488,10 @@ const Dashboard = ({ navigation }) => {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 />
-
                             </Svg>
-
                         </View>
-
                     </View>
-
                     <View style={styles.chartLabels}>
-
                         {dashboardData.weeklyProgress.labels.map(
                             (label) => (
                                 <Text
@@ -590,39 +502,26 @@ const Dashboard = ({ navigation }) => {
                                 </Text>
                             )
                         )}
-
                     </View>
-
                 </View>
-
-                {/* Active Projects */}
                 <View style={styles.projectsHeader}>
-
-                    <Text style={styles.sectionTitle}>
-                        Active Projects
-                    </Text>
-
+                    <Text style={styles.sectionTitle}>{Strings.dashboardLables.activeProjects}</Text>
                     <TouchableOpacity
-                        onPress={() =>
+                        onPress={() => {
                             logDashboardEvent("view_all_projects_clicked")
-                        }
+                            navigation.navigate("Projects")
+                        }}
                     >
-                        <Text style={styles.seeAll}>
-                            See All
-                        </Text>
+                        <Text style={styles.seeAll}>{Strings.dashboardLables.seeAll}</Text>
                     </TouchableOpacity>
-
                 </View>
-
                 {dashboardData.activeProjects.map((project) => (
-
                     <TouchableOpacity
                         key={project.id}
                         style={styles.projectCard}
                         activeOpacity={0.8}
                         onPress={() => handleProjectPress(project)}
                     >
-
                         <View
                             style={[
                                 styles.projectIcon,
@@ -632,28 +531,18 @@ const Dashboard = ({ navigation }) => {
                                 },
                             ]}
                         >
-                            <project.icon height={30} width={30}/>
+                            <project.icon height={36} width={36} />
                         </View>
-
                         <View style={styles.projectContent}>
-
                             <View style={styles.projectTitleRow}>
-
                                 <Text
                                     style={styles.projectName}
                                     numberOfLines={1}
                                 >
                                     {project.name}
                                 </Text>
-
-                                <View style={styles.priorityBadge}>
-                                    <Text style={styles.priorityText}>
-                                        {project.priority}
-                                    </Text>
-                                </View>
-
+                                <StatusBadge text={project.priority}/>
                             </View>
-
                             <View style={styles.progressRow}>
 
                                 <View style={styles.progressBackground}>
@@ -680,7 +569,7 @@ const Dashboard = ({ navigation }) => {
                 ))}
 
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -691,7 +580,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingHorizontal: Spacings.lg,
-        paddingTop: Spacings.vxl,
+        paddingTop: Spacings.vmd,
         paddingBottom: Numbers.num20,
     },
 
@@ -735,7 +624,7 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: Spacings.mmd,
         color: Colors.textColor,
-        fontWeight:fontWeights.w700,
+        fontWeight: fontWeights.w700,
     },
 
     headerActions: {
@@ -753,14 +642,14 @@ const styles = StyleSheet.create({
     },
 
     notificationDot: {
-    position: 'absolute',
-    top: Spacings.vxs,
-    right: Spacings.vxs,
-    width: Spacings.xxs,
-    height: Spacings.xxs,
-    borderRadius: scale(3),
-    backgroundColor: Colors.danger,
-  },
+        position: 'absolute',
+        top: Spacings.vxs,
+        right: Spacings.vxs,
+        width: Spacings.xxs,
+        height: Spacings.xxs,
+        borderRadius: scale(3),
+        backgroundColor: Colors.danger,
+    },
 
     statisticsContainer: {
         flexDirection: "row",
@@ -800,7 +689,7 @@ const styles = StyleSheet.create({
     },
 
     negativeChange: {
-        color:Colors.danger,
+        color: Colors.danger,
     },
 
     statValue: {
@@ -829,7 +718,8 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: Spacings.sm,
         fontWeight: fontSizes.w700,
-        color: Colors.textColor
+        color: Colors.textColor,
+        fontFamily: Fonts.semiBold
     },
 
     chartContainer: {
@@ -845,7 +735,7 @@ const styles = StyleSheet.create({
     },
 
     axisText: {
-        fontSize: moderateScale(7),
+        fontSize: fontSizes.xs,
         color: Colors.darkGray,
     },
 
@@ -893,7 +783,7 @@ const styles = StyleSheet.create({
     },
 
     chartLabel: {
-        fontSize: moderateScale(7),
+        fontSize: fontSizes.xs,
         color: Colors.darkGray,
     },
 
@@ -932,7 +822,8 @@ const styles = StyleSheet.create({
 
     projectContent: {
         flex: 1,
-        marginLeft: Spacings.xs
+        marginLeft: Spacings.xs,
+        paddingVertical:5
     },
 
     projectTitleRow: {
@@ -942,22 +833,22 @@ const styles = StyleSheet.create({
 
     projectName: {
         flex: 1,
-        fontSize: Spacings.mxs,
+        fontSize: Spacings.msm,
         color: Colors.textColor,
         fontWeight: fontWeights.w600,
     },
 
     priorityBadge: {
-        paddingHorizontal: scale(7),
-        paddingVertical: verticalScale(3),
-        borderRadius: scale(8),
+        paddingHorizontal: Spacings.xs,
+        paddingVertical: verticalScale(5),
+        borderRadius: Spacings.lg,
         backgroundColor: Colors.priorityBadge,
         marginLeft: scale(5),
     },
 
     priorityText: {
-        fontSize: moderateScale(7),
-        color: "#C48700",
+        fontSize: fontSizes.xxs,
+        color: Colors.BagdeText,
         fontWeight: fontWeights.w600,
     },
 
@@ -970,13 +861,13 @@ const styles = StyleSheet.create({
     progressBackground: {
         flex: 1,
         height: verticalScale(4),
-        backgroundColor: "#E6EAF0",
+        backgroundColor: Colors.gray,
         borderRadius: verticalScale(2),
         overflow: "hidden",
     },
 
     progressFill: {
-        height: "100%",
+        height: Spacings.fullWidth,
         backgroundColor: Colors.primary,
         borderRadius: verticalScale(2),
     },
@@ -984,38 +875,7 @@ const styles = StyleSheet.create({
     progressPercentage: {
         marginLeft: scale(7),
         fontSize: moderateScale(8),
-        color: "#747E8E",
-    },
-
-    bottomNavigation: {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: verticalScale(62),
-        backgroundColor: Colors.white,
-        borderTopWidth: 1,
-        borderTopColor: "#EEF0F4",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-    },
-
-    bottomTab: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    bottomLabel: {
-        marginTop: verticalScale(2),
-        fontSize: moderateScale(7),
-        color: "#9AA3B2",
-    },
-
-    activeBottomLabel: {
-        color: Colors.primary,
-        fontWeight: fontWeights.w600,
+        color: Colors.darkGray,
     },
 
 });

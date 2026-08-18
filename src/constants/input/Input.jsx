@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  View,
-  TouchableOpacity
-} from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 
-import {
-  Colors,
-  Fonts,
-  Spacings
-} from '../style/ConstantStyling';
+import { Colors, Fonts, Spacings } from '../style/ConstantStyling';
 
 import EyeIcon from '../../assets/images/Icons/EyeIcon.svg';
 import ClosedEye from '../../assets/images/Icons/ClosedEye.svg'
@@ -26,7 +17,7 @@ function Input({
   multiline = false,
   numberOfLines = 1,
   textAlignVertical = 'center',
-  placeholderTextColor = Colors.primary,
+  placeholderTextColor = Colors.inputPlaceholder,
   leftIcon
 }) {
 
@@ -99,6 +90,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacings.mmd,
     color: Colors.textColor,
     fontFamily: Fonts.regular,
+    opacity: 1,
   },
 
   multilineInput: {

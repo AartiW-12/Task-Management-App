@@ -123,7 +123,6 @@ const Register = () => {
                 onChangeText={setFname}
                 leftIcon={<ContactIcon height={15} width={15} />}
                 style={styles.inputName}
-                placeholderTextColor={Colors.textColor}
               />
             </View>
             <View style={styles.nameSection}>
@@ -134,7 +133,6 @@ const Register = () => {
                 onChangeText={setLname}
                 leftIcon={<ContactIcon height={15} width={15} />}
                 style={styles.inputName}
-                placeholderTextColor={Colors.textColor}
               />
             </View>
           </View>
@@ -146,7 +144,6 @@ const Register = () => {
               onChangeText={setEmail}
               leftIcon={<MailIcon height={15} width={15} />}
               style={styles.input}
-              placeholderTextColor={Colors.textColor}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.phone}</Text>
             <Input
@@ -155,7 +152,6 @@ const Register = () => {
               onChangeText={setPhone}
               leftIcon={<PhoneIcon height={15} width={15} />}
               style={styles.input}
-              placeholderTextColor={Colors.textColor}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.company}</Text>
             <Input
@@ -164,7 +160,6 @@ const Register = () => {
               onChangeText={setCompany}
               leftIcon={<CompanyIcon height={15} width={15} />}
               style={styles.input}
-              placeholderTextColor={Colors.textColor}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.password}</Text>
             <Input
@@ -173,7 +168,6 @@ const Register = () => {
               onChangeText={setPass}
               leftIcon={<LockIcon height={15} width={15} />}
               style={styles.input}
-              placeholderTextColor={Colors.textColor}
               secureTextEntry={true}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.cnfmPassword}</Text>
@@ -183,7 +177,6 @@ const Register = () => {
               onChangeText={setCnfmPass}
               leftIcon={<LockIcon height={15} width={15} />}
               style={styles.input}
-              placeholderTextColor={Colors.textColor}
               secureTextEntry={true}
             />
           </View>
@@ -232,7 +225,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-
   },
 
   nameSection: {
@@ -253,13 +245,12 @@ const styles = StyleSheet.create({
   inputName: {
     borderWidth: Numbers.p2,
     borderColor: Colors.textColor,
-    opacity: Numbers.p5,
     borderRadius: Spacings.mxl,
+    
   },
   input: {
     borderWidth: Numbers.p2,
     borderColor: Colors.textColor,
-    opacity: Numbers.p5,
     alignSelf: 'center',
     borderRadius: Spacings.mxl,
     marginLeft: Spacings.w15,

@@ -100,5 +100,15 @@ export const Strings = {
         manyAttempts : 'Too Many Attempts',
         manyRequestError : 'Too many requests. Please try again later.',
         tryAgainMessage : 'Something went wrong. Please try again.',
+    },
+    dashboardLables : {
+        activeProjects : 'Active Projects',
+        seeAll : 'See All',
+    },
+    projectScreen : {
+        searchPlaceholder : 'Search projects...',
+        label : {
+            progress : 'Progress',
+        }
     }
 }

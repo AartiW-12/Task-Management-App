@@ -5,6 +5,8 @@ export const Colors = {
     gardient:'#7C3AED',
     inputBackground: '#F1F5F9',
     priorityBadge : "#FFF1D2",
+    BagdeText : "#C48700",
+    inputPlaceholder : 'rgba(17, 24, 39, 0.5)',
     
 
     white: '#FFFFFF',
@@ -19,10 +21,66 @@ export const Colors = {
     danger : '#EF4444',
 
 
-    onboardingDot :'#D7E3F7'
+    onboardingDot :'#D7E3F7',
+
+    statusBadge: {
+        // Priority
+        high: {
+            background: '#FEF3C7',
+            text: '#92400E',
+        },
+
+        critical: {
+            background: '#FEE2E2',
+            text: '#991B1B',
+        },
+
+        medium: {
+            background: '#DFF2FF',
+            text: '#258FC4',
+        },
+
+        low: {
+            background: '#DCFCE7',
+            text: '#166534',
+        },
+
+        // Project / Task Status
+        inProgress: {
+            background: '#DBEAFE',
+            text: '#2563EB',
+        },
+
+        todo: {
+            background: '#F1F3F7',
+            text: '#718096',
+        },
+
+        review: {
+            background: '#FFF7ED',
+            text: '#9A3412',
+        },
+
+        completed: {
+            background: '#DFF8E8',
+            text: '#26A05D',
+        },
+
+        backlog: {
+            background: '#F1F3F7',
+            text: '#718096',
+        },
+
+        testing: {
+            background: '#F3E5FF',
+            text: '#8B43F5',
+        },
+    },
+
 }
 
 export const fontSizes = {
+    xxs : moderateScale(8),
     xs: moderateScale(10),
     sm: moderateScale(12),
     md: moderateScale(14),
@@ -52,6 +110,7 @@ export const Spacings = {
     arrowSize:scale(36),
 
     //verticle scaling
+    vxxs : verticalScale(5),
     vxs: verticalScale(10),
     vsm: verticalScale(12),
     vmd: verticalScale(14),
@@ -97,6 +156,8 @@ export const Spacings = {
     h45:45,
     h65:65,
     h110 : 110,
+    h54 : 54,
+    h55:55,
 }
 
 export const fontWeights = {
