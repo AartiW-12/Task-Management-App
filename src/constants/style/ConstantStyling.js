@@ -7,7 +7,8 @@ export const Colors = {
     priorityBadge : "#FFF1D2",
     BagdeText : "#C48700",
     inputPlaceholder : 'rgba(17, 24, 39, 0.5)',
-    
+    initialsBackground : '#EAF1FF',
+    selectedOption : '#F0F5FF',
 
     white: '#FFFFFF',
 
@@ -181,6 +182,7 @@ export const Numbers = {
     num90 : 90,
     num16 : 16,
     num34 : 34,
+    num50 : 50,
 
     //opacity
     p1:1,

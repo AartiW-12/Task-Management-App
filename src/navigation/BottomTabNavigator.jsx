@@ -13,13 +13,15 @@ import TeamIcon from '../assets/images/bottomTab/Team.svg'
 import ProfileIcon from '../assets/images/bottomTab/Profile.svg'
 
 import { Colors, Fonts, fontSizes, Numbers, Spacings } from '../constants/style/ConstantStyling'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import { verticalScale } from 'react-native-size-matters'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const Tab = createBottomTabNavigator()
 
-const BottomTabNavigator = () => {
 
+const BottomTabNavigator = () => {
+  const insets = useSafeAreaInsets()
   return (
     <Tab.Navigator
       screenOptions={{
@@ -27,7 +29,18 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textColor,
-        tabBarStyle: styles.tabBarStyle,
+         tabBarStyle: {
+    // height: Spacings.h65,
+    position:'absolute',
+    height: Platform.OS === 'android' ? 59 + insets.bottom : 70 ,
+    paddingBottom:5,
+    paddingTop: verticalScale(2),
+    paddingBottom: Spacings.vxs,
+    backgroundColor: Colors.white,
+    borderTopWidth: Numbers.zp1,
+    borderTopColor: Colors.textColor,
+    elevation: 5,
+  },
         tabBarLabelStyle: styles.tabBarLabelStyle,
       }}
     >
@@ -117,15 +130,7 @@ const BottomTabNavigator = () => {
 }
 
 const styles = StyleSheet.create({
-  tabBarStyle: {
-    height: Spacings.h65,
-    paddingTop: verticalScale(2),
-    paddingBottom: Spacings.vxs,
-    backgroundColor: Colors.white,
-    borderTopWidth: Numbers.zp1,
-    borderTopColor: Colors.textColor,
-    elevation: 5,
-  },
+ 
   tabBarLabelStyle: {
     fontFamily: Fonts.regular,
     fontSize: fontSizes.xs,

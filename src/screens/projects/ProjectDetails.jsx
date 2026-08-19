@@ -17,6 +17,9 @@ import TeamIcon from '../../assets/images/bottomTab/Team.svg'
 import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg'
 import FlagIcon from '../../assets/images/Icons/FlagIcon.svg'
 import TabSwitcher from '../../components/tabSwitcher/TabSwitcher';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { formatProjectDate } from '../../constants/function/FormatProjectDate';
 
 const taskTabs = [
   {
@@ -99,7 +102,10 @@ const activities = [
   },
 ];
 
-const ProjectDetails = ({ navigation, route }) => {
+const ProjectDetails = () => {
+
+  const navigation = useNavigation();
+  const route = useRoute()
 
   const project = route?.params?.project || {
     name: 'Mobile App Redesign',
@@ -107,6 +113,7 @@ const ProjectDetails = ({ navigation, route }) => {
     progress: 68,
     priority: 'High',
   };
+
 
   const [activeTab, setActiveTab] = useState('Tasks');
 
@@ -289,11 +296,12 @@ const ProjectDetails = ({ navigation, route }) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Header
         title=''
         onBackPress={() => navigation.goBack()}
         rightIcon={<EditIcon height={18} width={18} />}
+        onRightPress={() => navigation.navigate("EditProject", { project })}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -351,13 +359,13 @@ const ProjectDetails = ({ navigation, route }) => {
             label="Members"
           />
           <StatCard
-            icon={<CalendarIcon height={15} width={15} stroke={Colors.primary} />}
-            value="Oct 01"
+            icon={<CalendarIcon height={15} width={15} color={Colors.primary} />}
+            value={formatProjectDate(project.startDate)}
             label="Start"
           />
           <StatCard
             icon={<FlagIcon height={15} width={15} />}
-            value="Dec 28"
+            value={formatProjectDate(project.endDate)}
             label="End"
           />
         </View>
@@ -373,7 +381,7 @@ const ProjectDetails = ({ navigation, route }) => {
           {renderActiveTab()}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

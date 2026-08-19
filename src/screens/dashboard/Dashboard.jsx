@@ -110,6 +110,20 @@ const dashboardData = {
             priority: "High",
             icon: ProjectIcon,
         },
+        {
+            id: "project_2",
+            name: "Mobile App Redesign",
+            progress: 68,
+            priority: "High",
+            icon: ProjectIcon,
+        },
+        {
+            id: "project_3",
+            name: "Mobile App Redesign",
+            progress: 68,
+            priority: "High",
+            icon: ProjectIcon,
+        },
     ],
 };
 
@@ -255,7 +269,7 @@ const Dashboard = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} >
 
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -577,6 +591,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.screenBackground,
+        paddingBottom:50
     },
     scrollContent: {
         paddingHorizontal: Spacings.lg,

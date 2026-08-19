@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 
-import { Colors, Fonts, Spacings } from '../style/ConstantStyling';
+import { Colors, Fonts, fontSizes, Spacings } from '../style/ConstantStyling';
 
 import EyeIcon from '../../assets/images/Icons/EyeIcon.svg';
 import ClosedEye from '../../assets/images/Icons/ClosedEye.svg'
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
   container: {
     width: Spacings.fullWidth,
-    minHeight: 45,
+    minHeight: 40,
     borderRadius: Spacings.mmd,
     backgroundColor: Colors.inputBackground,
     flexDirection: 'row',
@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacings.mmd,
     color: Colors.textColor,
     fontFamily: Fonts.regular,
-    opacity: 1,
+    fontSize:fontSizes.xs
   },
 
   multilineInput: {
-    minHeight: 120,
+    minHeight: 80,
     textAlignVertical: 'top',
     paddingTop: Spacings.vmd,
     paddingBottom: Spacings.vmd,

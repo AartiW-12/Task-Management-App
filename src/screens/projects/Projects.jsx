@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, } from 'react-native';
 
-import { scale, verticalScale,} from 'react-native-size-matters';
+import { scale, verticalScale, } from 'react-native-size-matters';
 
 import TabSwitcher from '../../components/tabSwitcher/TabSwitcher';
 
 import ProjectIcon from '../../assets/images/bottomTab/Projects.svg';
-import { Colors, Fonts, fontSizes, fontWeights, Spacings } from '../../constants/style/ConstantStyling';
+import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from '../../constants/style/ConstantStyling';
 import StatusBadge from '../../components/statusBadge/StatusBadge'
 import Searchbar from '../../components/searchbar/Searchbar'
 
@@ -18,6 +18,7 @@ import {
 import { Strings } from '../../constants/strings/Strings';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../constants/button/Button';
+import { formatProjectDate } from '../../constants/function/FormatProjectDate'
 
 import TasksIcon from '../../assets/images/bottomTab/Tasks.svg'
 import TeamIcon from '../../assets/images/bottomTab/Team.svg'
@@ -30,7 +31,8 @@ const projects = [
     manager: 'Alex Chen',
     tasks: 34,
     members: 6,
-    date: 'Dec 28',
+    startDate: new Date(2026, 5, 1).getTime(),
+    endDate: new Date(2026, 11, 28).getTime(),
     progress: 68,
     priority: 'High',
     status: 'Active',
@@ -38,13 +40,15 @@ const projects = [
     color: Colors.primary,
     iconBackground: '#EAF1FF',
   },
+
   {
     id: '2',
     name: 'API Integration v3',
     manager: 'Sarah Kim',
     tasks: 18,
     members: 4,
-    date: 'Jan 15',
+    startDate: new Date(2026, 0, 15).getTime(),
+    endDate: new Date(2026, 10, 15).getTime(),
     progress: 23,
     priority: 'Critical',
     status: 'Active',
@@ -52,13 +56,15 @@ const projects = [
     color: '#8B43F5',
     iconBackground: '#F0E5FF',
   },
+
   {
     id: '3',
     name: 'Dashboard Analytics',
     manager: 'Mike Ross',
     tasks: 12,
     members: 3,
-    date: 'Dec 10',
+    startDate: new Date(2026, 5, 1).getTime(),
+    endDate: new Date(2026, 11, 10).getTime(),
     progress: 85,
     priority: 'Medium',
     status: 'Review',
@@ -66,13 +72,15 @@ const projects = [
     color: '#23C96B',
     iconBackground: '#E7F9EF',
   },
+
   {
     id: '4',
     name: 'E-Commerce Platform',
     manager: 'Emma Davis',
     tasks: 56,
     members: 8,
-    date: 'Nov 30',
+    startDate: new Date(2026, 6, 30).getTime(),
+    endDate: new Date(2026, 10, 30).getTime(),
     progress: 100,
     priority: 'Low',
     status: 'Done',
@@ -128,149 +136,137 @@ const Projects = ({ navigation }) => {
   }, [activeTab, searchText]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} >
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          Projects
+        </Text>
+        <Button
+          text={'+'}
+          textStyle={styles.plus}
+          style={styles.addButton}
+          onPress={() => navigation.navigate("ProjectForm")}
+        />
+      </View>
+      <View>
+        <Searchbar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder={Strings.projectScreen.searchPlaceholder}
+          containerStyle={styles.searchBar}
+        />
+      </View>
 
-      <ScrollView
+      <View style={styles.tabsContainer}>
+
+        <TabSwitcher
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabPress={setActiveTab}
+        />
+
+      </View>
+      <FlatList
+        data={filteredProjects}
+        keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>
-            Projects
-          </Text>
-          <Button
-            text={'+'}
-            textStyle={styles.plus}
-            style={styles.addButton}
-          />
-        </View>
-        <View>
-          <Searchbar
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder={Strings.projectScreen.searchPlaceholder}
-            containerStyle={styles.searchBar}
-          />
-        </View>
-
-        <View style={styles.tabsContainer}>
-
-          <TabSwitcher
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabPress={setActiveTab}
-          />
-
-        </View>
-        <View style={styles.projectList}>
-          {filteredProjects.map(project => (
-            <TouchableOpacity
-              key={project.id}
-              activeOpacity={0.85}
-              style={styles.projectCard}
-              onPress={() =>
-                navigation.navigate(
-                  'ProjectDetails',
+        keyboardDismissMode='on-drag'
+        contentContainerStyle={styles.projectList}
+        renderItem={({ item: project }) => (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.projectCard}
+            onPress={() =>
+              navigation.navigate('ProjectDetails', {
+                project,
+              })
+            }
+          >
+            <View style={styles.cardTopRow}>
+              <View
+                style={[
+                  styles.projectIconContainer,
                   {
-                    project,
-                  }
-                )
-              }
-            >
-              <View style={styles.cardTopRow}>
-
-                <View
-                  style={[
-                    styles.projectIconContainer,
-                    {
-                      backgroundColor:
-                        project.iconBackground,
-                    },
-                  ]}
-                >
-                  <ProjectIcon
-                    width={scale(19)}
-                    height={scale(19)}
-                    color={Colors.primary}
-                  />
-                </View>
-                <View style={styles.projectInfo}>
-                  <View style={styles.nameRow}>
-                    <Text
-                      style={styles.projectName}
-                      numberOfLines={1}
-                    >
-                      {project.name}
-                    </Text>
-                    <StatusBadge text={project.priority} />
-                  </View>
-                  <Text style={styles.manager}>
-                    {project.manager}
-                  </Text>
-                </View>
+                    backgroundColor: project.iconBackground,
+                  },
+                ]}
+              >
+                <ProjectIcon
+                  width={scale(19)}
+                  height={scale(19)}
+                  color={Colors.primary}
+                />
               </View>
-              <View style={styles.metaRow}>
+              <View style={styles.projectInfo}>
+                <View style={styles.nameRow}>
 
-                <View style={styles.metaItem}>
-                  <TasksIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-                  <Text style={styles.metaText}>
-                    {project.tasks}
+                  <Text
+                    style={styles.projectName}
+                    numberOfLines={1}
+                  >
+                    {project.name}
                   </Text>
+                  <StatusBadge text={project.priority} />
                 </View>
-
-                <View style={styles.metaItem}>
-                  <TeamIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-                  <Text style={styles.metaText}>
-                    {project.members}
-                  </Text>
-                </View>
-
-                <View style={styles.metaItem}>
-                  <CalendarIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-                  <Text style={styles.metaText}>
-                    {project.date}
-                  </Text>
-                </View>
-                <View style={styles.statusWrapper}>
-                  <StatusBadge text={project.statusText} />
-                </View>
-
-              </View>
-              <View style={styles.progressRow}>
-
-                <View style={styles.progressBackground}>
-
-                  <View
-                    style={[
-                      styles.progressFill,
-                      {
-                        width: `${project.progress}%`,
-                        backgroundColor:
-                          project.color,
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.progressText}>
-                  {project.progress}%
+                <Text style={styles.manager}>
+                  {project.manager}
                 </Text>
               </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+            </View>
+            <View style={styles.metaRow}>
+              <View style={styles.metaItem}>
+                <TasksIcon
+                  width={scale(11)}
+                  height={scale(11)}
+                  color={Colors.darkGray}
+                />
+                <Text style={styles.metaText}>
+                  {project.tasks}
+                </Text>
+              </View>
+              <View style={styles.metaItem}>
+                <TeamIcon
+                  width={scale(11)}
+                  height={scale(11)}
+                  color={Colors.darkGray}
+                />
+                <Text style={styles.metaText}>
+                  {project.members}
+                </Text>
+              </View>
+              <View style={styles.metaItem}>
+                <CalendarIcon
+                  width={scale(11)}
+                  height={scale(11)}
+                  color={Colors.darkGray}
+                />
+                <Text style={styles.metaText}>
+                  {formatProjectDate(project.endDate)}
+                </Text>
+              </View>
+              <View style={styles.statusWrapper}>
+                <StatusBadge text={project.statusText} />
+              </View>
+            </View>
+            <View style={styles.progressRow}>
+              <View style={styles.progressBackground}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    {
+                      width: `${project.progress}%`,
+                      backgroundColor: project.color,
+                    },
+                  ]}
+                />
+              </View>
+              <Text style={styles.progressText}>
+                {project.progress}%
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
   );
 };
@@ -280,6 +276,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.screenBackground,
+    paddingHorizontal:Numbers.num20,
+    paddingTop:Numbers.num16,
+    paddingBottom:Numbers.num50,
   },
   scrollContent: {
     paddingHorizontal: Spacings.lg,
@@ -316,6 +315,8 @@ const styles = StyleSheet.create({
   },
   projectList: {
     gap: Spacings.sm,
+    // paddingHorizontal:20,
+    paddingBottom:40
   },
 
   projectCard: {
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     marginLeft: Spacings.xs,
-    fontSize:fontSizes.sm,
+    fontSize: fontSizes.sm,
     fontWeight: fontWeights.w700,
     color: Colors.textColor,
     fontFamily: Fonts.bold

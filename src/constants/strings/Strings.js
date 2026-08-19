@@ -1,4 +1,3 @@
-import { s } from "react-native-size-matters";
 
 export const Strings = {
     onboardingTitle: {
@@ -22,7 +21,11 @@ export const Strings = {
         verifyOTP: "Verify OTP",
         google: "Google",
         github: 'GitHub',
-        resetPassword: "Reset "
+        resetPassword: "Reset ",
+        addMember : "Add Members",
+        createProject : 'Create Project',
+        cancel : "Cancel",
+        saveChanges : "Save Changes"
     },
 
     taskFlow: 'TaskFlow',
@@ -66,7 +69,10 @@ export const Strings = {
         password: '••••••••',
         firstName: "Alex",
         lastName: "Chen",
-
+        enterProjectName : 'Enter Project Name',
+        projectDesc : 'Project Description',
+        startDate : 'Oct 01',
+        endDate : 'Dec 28',
     },
     passwordConditions: {
         lengthValidation: 'At least 8 characters',
@@ -109,6 +115,18 @@ export const Strings = {
         searchPlaceholder : 'Search projects...',
         label : {
             progress : 'Progress',
+            projectName : 'PROJECT NAME',
+            projectDesc : 'DESCRIPTION',
+            startDate : "START DATE",
+            endDate : "END DATE",
+            priority : "PRIORITY",
+            status : 'STATUS',
+            projectManager : 'PROJECT MANAGER',
+            teamMembers :'TEAM MEMBERS'
         }
+    },
+    headers : {
+        editProject :'Edit Project',
+        newProject : 'New Project',
     }
 }
