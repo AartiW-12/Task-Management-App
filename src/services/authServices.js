@@ -106,25 +106,7 @@ export const resetPassword = async (email) => {
   try {
     const cleanEmail = email.trim().toLowerCase()
 
-    console.log('Checking email:', cleanEmail)
-
-    const usersQuery = await db
-      .collection('users')
-      .where('email', '==', cleanEmail)
-      .get()
-
-    console.log('Users found:', usersQuery.size)
-
-    if (usersQuery.empty) {
-      const error = new Error('USER_NOT_FOUND')
-      error.code = 'auth/user-not-found'
-      throw error
-    }
-
-    // User exists → send password reset email
     await sendPasswordResetEmail(auth, cleanEmail)
-
-    console.log('Password reset email sent')
 
     return true
 
@@ -133,7 +115,6 @@ export const resetPassword = async (email) => {
       'RESET PASSWORD ERROR:',
       error.code || error.message
     )
-
     throw error
   }
 }
@@ -141,9 +122,6 @@ export const resetPassword = async (email) => {
 export const logoutUser = async () => {
   try {
     await signOut(auth)
-
-    console.log('User logged out successfully')
-
     return true
   } catch (error) {
     console.log('LOGOUT ERROR:', error.code || error.message)

@@ -10,11 +10,12 @@ import SpiralIcon from '../../assets/images/Icons/SpiralIcon.svg'
 import LinearGradient from 'react-native-linear-gradient'
 
 import { Strings } from '../../constants/strings/Strings'
+import Loader from '../../components/loader/Loader'
 
 const SplashScreen = () => {
     return (
         <View style={styles.container}>
-            {/* <View style={styles.splashBackground}> */}
+            <View >
             <LinearGradient
                 colors={[Colors.primary, Colors.gardient]}
                 start={{ x: 0, y: 0 }}
@@ -37,7 +38,8 @@ const SplashScreen = () => {
                     <Text style={styles.appSlogen}>{Strings.appSlogen}</Text>
                 </View>
             </LinearGradient>
-            {/* </View> */}
+            {/* <Loader size='50'/> */}
+            </View>
         </View>
     )
 }

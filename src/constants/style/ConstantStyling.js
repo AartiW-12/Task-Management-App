@@ -9,6 +9,7 @@ export const Colors = {
     inputPlaceholder : 'rgba(17, 24, 39, 0.5)',
     initialsBackground : '#EAF1FF',
     selectedOption : '#F0F5FF',
+    validation : '#f2b06f',
 
     white: '#FFFFFF',
 

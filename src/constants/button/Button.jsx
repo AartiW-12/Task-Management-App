@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React from 'react'
 import { Colors, Spacings } from '../style/ConstantStyling'
+import Loader from '../../components/loader/Loader'
 
 const Button = ({
     varient = 'primary',
@@ -8,7 +9,8 @@ const Button = ({
     onPress,
     style,
     textStyle,
-    icon
+    icon,
+    loading = false
 }) => {
     return (
         <Pressable
@@ -19,36 +21,39 @@ const Button = ({
                 style
             ]}
         >
-            <View style={styles.buttonContent}>
-                {icon && icon}
+            {loading ? <Loader visible={true} size='large'/> :
+                <View style={styles.buttonContent}>
+                    {icon && icon}
 
-                <Text
-                    style={[
-                        styles.text,
-                        varient === 'primary'
-                            ? styles.primaryText
-                            : styles.secondaryText,
-                        textStyle
-                    ]}
-                >
-                    {text}
-                </Text>
-            </View>
+                    <Text
+                        style={[
+                            styles.text,
+                            varient === 'primary'
+                                ? styles.primaryText
+                                : styles.secondaryText,
+                            textStyle
+                        ]}
+                    >
+                        {text}
+                    </Text>
+                </View>
+            }
+
         </Pressable>
     )
 }
 
 const styles = StyleSheet.create({
     btn: {
-    width:Spacings.fullWidth,
-    height: 45,
-    borderRadius: Spacings.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
+        width: Spacings.fullWidth,
+        height: 45,
+        borderRadius: Spacings.lg,
+        justifyContent: 'center',
+        alignItems: 'center',
 
-    shadowColor: Colors.primary,
-    elevation: 9,
-},
+        shadowColor: Colors.primary,
+        elevation: 9,
+    },
 
     primary: {
         backgroundColor: Colors.primary,

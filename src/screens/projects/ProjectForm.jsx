@@ -1,42 +1,12 @@
 import React, { useEffect, useState } from 'react';
-
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TextInput,
-    TouchableOpacity,
-    Alert,
-    Modal,
-    FlatList,
-    KeyboardAvoidingView,
-} from 'react-native';
-
-import {
-    scale,
-    verticalScale,
-    moderateScale,
-} from 'react-native-size-matters';
-
-// import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback,} from 'react-native';
+import { scale, verticalScale, moderateScale,} from 'react-native-size-matters';
 import Header from '../../components/header/Header';
-import StatusBadge from '../../components/statusBadge/StatusBadge';
 
-import {
-    Colors,
-    Fonts,
-    fontSizes,
-    fontWeights,
-    Numbers,
-    Spacings,
-} from '../../constants/style/ConstantStyling';
+import { Colors, Fonts, fontSizes, Numbers, Spacings,} from '../../constants/style/ConstantStyling';
+import { db } from '../../firebase/firebaseConfig';
 
-import { auth, db } from '../../firebase/firebaseConfig';
 
-import {
-    logDashboardEvent,
-} from '../../services/analyticsServices';
 
 import DeleteIcon from '../../assets/images/Icons/DeleteIcon.svg'
 import ProjectNameIcon from '../../assets/images/Icons/ProjectNameIcon.svg'
@@ -48,6 +18,8 @@ import Input from '../../constants/input/Input';
 import Button from '../../constants/button/Button';
 import DatePicker from 'react-native-date-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CommonStyles } from '../../constants/style/CommonStyles';
+import { customSnackbar } from '../../components/snackbar/SnackBar';
 
 const PRIORITIES = [
     'Low',
@@ -98,43 +70,22 @@ const ProjectForm = ({
 }) => {
     const isEdit = mode === 'edit';
     const project = route?.params?.project || null;
-    const [projectName, setProjectName] = useState(
-        project?.name || ''
-    );
 
-    console.log("PROJECT : ", project)
-    const [description, setDescription] = useState(
-        project?.description || ''
-    );
+    //state for input values    
+    const [projectName, setProjectName] = useState(project?.name || '');
+    const [description, setDescription] = useState(project?.description || '');
+    const [priority, setPriority] = useState(project?.priority || 'High');
+    const [status, setStatus] = useState(project?.status || '');
+    const [manager, setManager] = useState(project?.manager || null);
+    const [teamMembers, setTeamMembers] = useState(project?.teamMembers || []);
 
-    const [priority, setPriority] = useState(
-        project?.priority || 'High'
-    );
+    //state for modals
+    const [showStatusModal, setShowStatusModal] =useState(false);
+    const [showManagerModal, setShowManagerModal] =useState(false);
+    const [showTeamModal, setShowTeamModal] =useState(false);
 
-    const [status, setStatus] = useState(
-        project?.status || ''
-    );
-
-    const [manager, setManager] = useState(
-        project?.manager || null
-    );
-
-    const [teamMembers, setTeamMembers] = useState(
-        project?.teamMembers || []
-    );
-
-
-    const [showStatusModal, setShowStatusModal] =
-        useState(false);
-
-    const [showManagerModal, setShowManagerModal] =
-        useState(false);
-
-    const [showTeamModal, setShowTeamModal] =
-        useState(false);
-
+    //state for data and loading
     const [loading, setLoading] = useState(false);
-
     const [users, setUsers] = useState(DUMMY_USERS);
 
     const [startDate, setStartDate] = useState(
@@ -151,13 +102,7 @@ const ProjectForm = ({
 
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-    const formatDate = date => {
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric',
-        });
-    };
+ 
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -189,231 +134,152 @@ const ProjectForm = ({
     }, []);
 
     const toggleTeamMember = member => {
-
         const alreadySelected =
             teamMembers.some(
                 item => item.id === member.id
             );
-
         if (alreadySelected) {
-
             setTeamMembers(
                 teamMembers.filter(
                     item => item.id !== member.id
                 )
             );
-
         } else {
-
             setTeamMembers([
                 ...teamMembers,
                 member,
             ]);
-
         }
-
     };
 
     const removeTeamMember = memberId => {
-
         setTeamMembers(
             teamMembers.filter(
                 member => member.id !== memberId
             )
         );
-
     };
-
 
     const handleSubmit = async () => {
-
-        if (!projectName.trim()) {
-
-            Alert.alert(
-                'Required',
-                'Please enter project name.'
-            );
-
-            return;
-        }
-
-        if (!priority) {
-
-            Alert.alert(
-                'Required',
-                'Please select priority.'
-            );
-
-            return;
-        }
-
-        try {
-
-            setLoading(true);
-
-            const user = auth.currentUser;
-
-            if (!user) {
-
-                Alert.alert(
-                    'Authentication',
-                    'Please login again.'
-                );
-
-                return;
-            }
-
-            const projectData = {
-                name: projectName.trim(),
-                description: description.trim(),
-
-                startDate: startDate.toISOString(),
-                endDate: endDate.toISOString(),
-
-                priority,
-                status,
-
-                manager: manager
-                    ? {
-                        id: manager.id,
-                        name: `${manager.firstName} ${manager.lastName}`.trim(),
-                    }
-                    : null,
-
-                teamMembers: teamMembers.map(member => ({
-                    id: member.id,
-                    name: `${member.firstName} ${member.lastName}`.trim(),
-                    role: member.role,
-                })),
-
-                updatedBy: user.uid,
-                updatedAt: new Date().toISOString(),
-            };
-
-            if (!isEdit) {
-
-                const projectRef = db
-                    .collection('projects')
-                    .doc();
-
-                await projectRef.set({
-
-                    ...projectData,
-
-                    id: projectRef.id,
-
-                    createdBy: user.uid,
-
-                    createdAt:
-                        new Date().toISOString(),
-
-                });
-
-
-                await logDashboardEvent(
-                    'project_created',
-                    {
-                        project_id: projectRef.id,
-                        project_name: projectName.trim(),
-                        priority,
-                        status: status || 'Not Set',
-                    }
-                );
-
-
-                Alert.alert(
-                    'Success',
-                    'Project created successfully.',
-                    [
-                        {
-                            text: 'OK',
-                            onPress: () => {
-                                navigation.goBack();
-                            },
-                        },
-                    ]
-                );
-
-            }
-            else {
-
-                const projectId =
-                    project?.id ||
-                    route?.params?.projectId;
-
-                if (!projectId) {
-
-                    Alert.alert(
-                        'Error',
-                        'Project ID not found.'
-                    );
-
-                    return;
-                }
-
-
-                await db
-                    .collection('projects')
-                    .doc(projectId)
-                    .update(projectData);
-
-
-                await logDashboardEvent(
-                    'project_updated',
-                    {
-                        project_id: projectId,
-                        project_name: projectName.trim(),
-                        priority,
-                        status: status || 'Not Set',
-                    }
-                );
-
-
-                Alert.alert(
-                    'Success',
-                    'Project updated successfully.',
-                    [
-                        {
-                            text: 'OK',
-                            onPress: () => {
-                                navigation.goBack();
-                            },
-                        },
-                    ]
-                );
-
-            }
-
-        } catch (error) {
-
-            console.log(
-                'PROJECT SAVE ERROR:',
-                error
-            );
-
-            Alert.alert(
-                'Error',
-                'Unable to save project.'
-            );
-
-        } finally {
-
-            setLoading(false);
-
-        }
-
+        // if (!projectName.trim()) {
+        //     Alert.alert(
+        //         'Required',
+        //         'Please enter project name.'
+        //     );
+        //     return;
+        // }
+        // if (!priority) {
+        //     Alert.alert(
+        //         'Required',
+        //         'Please select priority.'
+        //     );
+        //     return;
+        // }
+        // try {
+        //     setLoading(true);
+        //     const user = auth.currentUser;
+        //     if (!user) {
+        //         Alert.alert(
+        //             'Authentication',
+        //             'Please login again.'
+        //         );
+        //         return;
+        //     }
+        //     const projectData = {
+        //         name: projectName.trim(),
+        //         description: description.trim(),
+        //         startDate: startDate.toISOString(),
+        //         endDate: endDate.toISOString(),
+        //         priority,
+        //         status,
+        //         manager: manager
+        //             ? {
+        //                 id: manager.id,
+        //                 name: `${manager.firstName} ${manager.lastName}`.trim(),
+        //             }
+        //             : null,
+        //         teamMembers: teamMembers.map(member => ({
+        //             id: member.id,
+        //             name: `${member.firstName} ${member.lastName}`.trim(),
+        //             role: member.role,
+        //         })),
+        //         updatedBy: user.uid,
+        //         updatedAt: new Date().toISOString(),
+        //     };
+        //     if (!isEdit) {
+        //         const projectRef = db
+        //             .collection('projects')
+        //             .doc();
+        //         await projectRef.set({
+        //             ...projectData,
+        //             id: projectRef.id,
+        //             createdBy: user.uid,
+        //             createdAt:
+        //                 new Date().toISOString(),
+        //         });
+        //         Alert.alert(
+        //             'Success',
+        //             'Project created successfully.',
+        //             [
+        //                 {
+        //                     text: 'OK',
+        //                     onPress: () => {
+        //                         navigation.goBack();
+        //                     },
+        //                 },
+        //             ]
+        //         );
+        //     }
+        //     else {
+        //         const projectId =
+        //             project?.id ||
+        //             route?.params?.projectId;
+        //         if (!projectId) {
+        //             Alert.alert(
+        //                 'Error',
+        //                 'Project ID not found.'
+        //             );
+        //             return;
+        //         }
+        //         await db
+        //             .collection('projects')
+        //             .doc(projectId)
+        //             .update(projectData);
+        //         Alert.alert(
+        //             'Success',
+        //             'Project updated successfully.',
+        //             [
+        //                 {
+        //                     text: 'OK',
+        //                     onPress: () => {
+        //                         navigation.goBack();
+        //                     },
+        //                 },
+        //             ]
+        //         );
+        //     }
+        // } catch (error) {
+        //     console.log(
+        //         'PROJECT SAVE ERROR:',
+        //         error
+        //     );
+        //     Alert.alert(
+        //         'Error',
+        //         'Unable to save project.'
+        //     );
+        // } finally {
+        //     setLoaing(false);
+        // }
+        customSnackbar("!  Created ", 'validation')
+        navigation.goBack()
     };
-
     const handleDelete = () => {
-
         const projectId =
             project?.id ||
             route?.params?.projectId;
-
         if (!projectId) {
             return;
         }
-
         Alert.alert(
             'Delete Project',
             'Are you sure you want to delete this project?',
@@ -422,52 +288,32 @@ const ProjectForm = ({
                     text: 'Cancel',
                     style: 'cancel',
                 },
-
                 {
                     text: 'Delete',
                     style: 'destructive',
-
                     onPress: async () => {
-
                         try {
-
                             await db
                                 .collection('projects')
                                 .doc(projectId)
                                 .delete();
-
-
-                            await logDashboardEvent(
-                                'project_deleted',
-                                {
-                                    project_id: projectId,
-                                }
-                            );
-
-
                             navigation.goBack();
-
                         } catch (error) {
-
                             console.log(
                                 'DELETE PROJECT ERROR:',
                                 error
                             );
-
                             Alert.alert(
                                 'Error',
                                 'Unable to delete project.'
                             );
-
                         }
-
                     },
                 },
             ]
         );
 
     };
-
     return (
         <SafeAreaView style={styles.container} >
             <KeyboardAvoidingView
@@ -507,25 +353,19 @@ const ProjectForm = ({
                         style={styles.input}
                     />
                     <View style={styles.dateRow}>
-
-                        {/* START DATE */}
                         <View style={styles.dateColumn}>
-
                             <Text style={styles.formLabel}>
                                 {Strings.projectScreen.label.startDate}
                             </Text>
-
                             <TouchableOpacity
                                 activeOpacity={0.8}
                                 onPress={() => setShowStartDatePicker(true)}
                             >
                                 <View pointerEvents="none">
-
                                     <Input
                                         value={startDate.toLocaleDateString('en-US', {
                                             month: 'short',
                                             day: '2-digit',
-                                            year: 'numeric',
                                         })}
                                         editable={false}
                                         placeholder={Strings.placeholders.startDate}
@@ -538,31 +378,22 @@ const ProjectForm = ({
                                         }
                                         style={styles.input}
                                     />
-
                                 </View>
                             </TouchableOpacity>
-
                         </View>
-
-
-                        {/* END DATE */}
                         <View style={styles.dateColumn}>
-
                             <Text style={styles.formLabel}>
                                 {Strings.projectScreen.label.endDate}
                             </Text>
-
                             <TouchableOpacity
                                 activeOpacity={0.8}
                                 onPress={() => setShowEndDatePicker(true)}
                             >
                                 <View pointerEvents="none">
-
                                     <Input
                                         value={endDate.toLocaleDateString('en-US', {
                                             month: 'short',
                                             day: '2-digit',
-                                            year: 'numeric',
                                         })}
                                         editable={false}
                                         placeholder={Strings.placeholders.endDate}
@@ -575,12 +406,9 @@ const ProjectForm = ({
                                         }
                                         style={styles.input}
                                     />
-
                                 </View>
                             </TouchableOpacity>
-
                         </View>
-
                     </View>
                     <Text style={styles.formLabel}>{Strings.projectScreen.label.priority}</Text>
                     <View style={styles.priorityRow}>
@@ -599,7 +427,6 @@ const ProjectForm = ({
                                         styles.priorityButtonActive,
                                     ]}
                                 >
-
                                     <Text
                                         style={[
                                             styles.priorityText,
@@ -609,16 +436,12 @@ const ProjectForm = ({
                                     >
                                         {item}
                                     </Text>
-
                                 </TouchableOpacity>
                             );
-
                         })}
-
                     </View>
                     {!isEdit && <View>
                         <Text style={styles.formLabel}>{Strings.projectScreen.label.status}</Text>
-
                         <Dropdown
                             value={status || 'Select status'}
                             onPress={() => {
@@ -628,7 +451,6 @@ const ProjectForm = ({
                         />
                     </View>}
                     <Text style={styles.formLabel}>{Strings.projectScreen.label.projectManager}</Text>
-
                     <Dropdown
                         value={
                             manager
@@ -660,12 +482,9 @@ const ProjectForm = ({
                             <Text style={styles.addMemberText}>
                                 <AddMemberIcon height={12} width={12} />  Add Members
                             </Text>
-
                         </TouchableOpacity>
-
                     </View>
                     <View style={styles.actionRow}>
-
                         {isEdit && (
                             <Button
                                 text={Strings.buttonText.cancel}
@@ -674,7 +493,6 @@ const ProjectForm = ({
                                 textStyle={styles.cancelText}
                             />
                         )}
-
                         <Button
                             text={
                                 loading
@@ -691,9 +509,7 @@ const ProjectForm = ({
                             ]}
                             textStyle={styles.submitText}
                         />
-
                     </View>
-
                 </ScrollView>
                 <DatePicker
                     modal
@@ -706,7 +522,6 @@ const ProjectForm = ({
                     }}
                     onCancel={() => setShowStartDatePicker(false)}
                 />
-
                 <DatePicker
                     modal
                     mode="date"
@@ -759,7 +574,6 @@ const ProjectForm = ({
         </SafeAreaView>
     );
 };
-
 
 const Dropdown = ({
     value,
@@ -844,7 +658,8 @@ const SelectionModal = ({
             animationType="slide"
             onRequestClose={onClose}
         >
-            <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
 
                     <View style={styles.modalHeader}>
@@ -873,6 +688,11 @@ const SelectionModal = ({
                             isUser
                                 ? item.id
                                 : `${item}-${index}`
+                        }
+                        ListEmptyComponent={
+                            <View style={CommonStyles.emptyList}>
+                                <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
+                            </View>
                         }
                         renderItem={({ item }) => {
                             const value = isUser
@@ -921,6 +741,7 @@ const SelectionModal = ({
                     />
                 </View>
             </View>
+            </TouchableWithoutFeedback>
         </Modal>
     );
 };
@@ -940,17 +761,13 @@ const TeamSelectionModal = ({
             animationType="slide"
             onRequestClose={onClose}
         >
-
-            <View style={styles.modalOverlay}>
-
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
-
                     <View style={styles.modalHeader}>
-
                         <Text style={styles.modalTitle}>
                             Add Team Members
                         </Text>
-
                         <TouchableOpacity
                             onPress={onClose}
                         >
@@ -958,21 +775,21 @@ const TeamSelectionModal = ({
                                 ×
                             </Text>
                         </TouchableOpacity>
-
                     </View>
-
-
                     <FlatList
                         data={users}
                         keyExtractor={item => item.id}
+                        ListEmptyComponent={
+                            <View style={CommonStyles.emptyList}>
+                                <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
+                            </View>
+                        }
                         renderItem={({ item }) => {
-
                             const isSelected =
                                 selected.some(
                                     member =>
                                         member.id === item.id
                                 );
-
                             return (
                                 <TouchableOpacity
                                     style={styles.option}
@@ -980,26 +797,20 @@ const TeamSelectionModal = ({
                                         onToggle(item)
                                     }
                                 >
-
                                     <View style={styles.optionAvatar}>
                                         <Text style={styles.optionAvatarText}>
                                             {item.firstName?.charAt(0)}
                                             {item.lastName?.charAt(0)}
                                         </Text>
                                     </View>
-
                                     <View style={{ flex: 1 }}>
-
                                         <Text style={styles.optionText}>
                                             {item.firstName} {item.lastName}
                                         </Text>
-
                                         <Text style={styles.optionSubText}>
                                             {item.role}
                                         </Text>
-
                                     </View>
-
                                     <View
                                         style={[
                                             styles.checkbox,
@@ -1013,7 +824,6 @@ const TeamSelectionModal = ({
                                             </Text>
                                         )}
                                     </View>
-
                                 </TouchableOpacity>
                             );
                         }}
@@ -1023,11 +833,9 @@ const TeamSelectionModal = ({
                         onPress={onClose}
                         textStyle={styles.modalDoneText}
                     />
-
                 </View>
-
             </View>
-
+            </TouchableWithoutFeedback>
         </Modal>
     );
 };

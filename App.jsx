@@ -8,6 +8,7 @@ import SplashScreen from './src/screens/splash screen/SplashScreen'
 import { CommonStyles } from './src/constants/style/CommonStyles';
 import { useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Snackbar } from './src/components/snackbar/SnackBar';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
     <SafeAreaProvider>
       <NavigationContainer>
           <AppNavigator />
+          <Snackbar />
       </NavigationContainer>
       
     </SafeAreaProvider>

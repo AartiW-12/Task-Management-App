@@ -18,6 +18,11 @@ export const formatProjectDate = (date) => {
         jsDate = new Date(date);
     }
 
+    // Date string: "2026-12-28"
+    else if (typeof date === 'string') {
+        jsDate = new Date(`${date}T00:00:00`);
+    }
+
     // Firestore timestamp object
     else if (date.seconds) {
         jsDate = new Date(date.seconds * 1000);

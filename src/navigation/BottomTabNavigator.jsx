@@ -29,18 +29,18 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textColor,
-         tabBarStyle: {
-    // height: Spacings.h65,
-    position:'absolute',
-    height: Platform.OS === 'android' ? 59 + insets.bottom : 70 ,
-    paddingBottom:5,
-    paddingTop: verticalScale(2),
-    paddingBottom: Spacings.vxs,
-    backgroundColor: Colors.white,
-    borderTopWidth: Numbers.zp1,
-    borderTopColor: Colors.textColor,
-    elevation: 5,
-  },
+        tabBarStyle: {
+          // height: Spacings.h65,
+          position: 'absolute',
+          height: Platform.OS === 'android' ? 59 + insets.bottom : 70,
+          paddingBottom: 5,
+          paddingTop: verticalScale(2),
+          paddingBottom: Spacings.vxs,
+          backgroundColor: Colors.white,
+          borderTopWidth: Numbers.zp1,
+          borderTopColor: Colors.textColor,
+          elevation: 5,
+        },
         tabBarLabelStyle: styles.tabBarLabelStyle,
       }}
     >
@@ -113,8 +113,7 @@ const BottomTabNavigator = () => {
         name='Profile'
         component={Profile}
         options={{
-          tabBarLabel: 'Tasks',
-
+          tabBarLabel: 'Profile',
           tabBarIcon: ({ focused }) => (
             <ProfileIcon
               width={22}
@@ -130,7 +129,7 @@ const BottomTabNavigator = () => {
 }
 
 const styles = StyleSheet.create({
- 
+
   tabBarLabelStyle: {
     fontFamily: Fonts.regular,
     fontSize: fontSizes.xs,

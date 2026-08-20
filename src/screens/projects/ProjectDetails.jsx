@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
 
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity,} from 'react-native';
-
-import {scale,} from 'react-native-size-matters';
-
+import { scale } from 'react-native-size-matters';
 import ProjectIcon from '../../assets/images/Icons/ProjectsIcon.svg';
-import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from '../../constants/style/ConstantStyling';
+import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings,} from '../../constants/style/ConstantStyling';
 import Header from '../../components/header/Header';
-
-import EditIcon from '../../assets/images/Icons/EditIcon.svg'
+import EditIcon from '../../assets/images/Icons/EditIcon.svg';
 import StatusBadge from '../../components/statusBadge/StatusBadge';
 import { Strings } from '../../constants/strings/Strings';
-
-import TaskIcon from '../../assets/images/bottomTab/Tasks.svg'
-import TeamIcon from '../../assets/images/bottomTab/Team.svg'
-import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg'
-import FlagIcon from '../../assets/images/Icons/FlagIcon.svg'
+import TaskIcon from '../../assets/images/bottomTab/Tasks.svg';
+import TeamIcon from '../../assets/images/bottomTab/Team.svg';
+import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg';
+import FlagIcon from '../../assets/images/Icons/FlagIcon.svg';
 import TabSwitcher from '../../components/tabSwitcher/TabSwitcher';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute,} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatProjectDate } from '../../constants/function/FormatProjectDate';
+import { getProjectProgress, getProjectManager, getProjectTasks, getProjectMembers, getTaskUser,} from '../../constants/mockData/mockTaskData';
+
 
 const taskTabs = [
   {
@@ -37,49 +35,6 @@ const taskTabs = [
   {
     label: 'Activity',
     value: 'Activity',
-  },
-];
-
-const tasks = [
-  {
-    id: '1',
-    title: 'Design system component library',
-    user: 'Alex Chen',
-    status: 'In Progress',
-    statusColor: Colors.primary,
-    dotColor: '#F5A623',
-  },
-  {
-    id: '2',
-    title: 'User authentication flow',
-    user: 'Emma Davis',
-    status: 'Completed',
-    statusColor: '#26A05D',
-    dotColor: '#F5A623',
-  },
-  {
-    id: '3',
-    title: 'Push notification service',
-    user: 'Alex Chen',
-    status: 'Backlog',
-    statusColor: '#7F8999',
-    dotColor: Colors.primary,
-  },
-  {
-    id: '4',
-    title: 'Dark mode implementation',
-    user: 'Mike Ross',
-    status: 'Testing',
-    statusColor: '#9A49DF',
-    dotColor: '#23C96B',
-  },
-];
-const teamMembers = [
-  {
-    id: '1',
-    name: 'Alex Chen',
-    role: 'Project Manager',
-    initials: 'AC',
   },
 ];
 
@@ -102,37 +57,67 @@ const activities = [
   },
 ];
 
+
 const ProjectDetails = () => {
 
   const navigation = useNavigation();
-  const route = useRoute()
+  const route = useRoute();
 
-  const project = route?.params?.project || {
-    name: 'Mobile App Redesign',
-    manager: 'Alex Chen',
-    progress: 68,
-    priority: 'High',
-  };
-
+  const project = route?.params?.project;
 
   const [activeTab, setActiveTab] = useState('Tasks');
+  const progressData = useMemo(() => {
+    if (!project?.id) {
+      return {
+        total: 0,
+        completed: 0,
+        pending: 0,
+        progress: 0,
+      };
+    }
+
+    return getProjectProgress(project.id);
+  }, [project?.id]);
+
+
+  const manager = useMemo(() => {
+    if (!project?.id) {
+      return null;
+    }
+
+    return getProjectManager(project.id);
+  }, [project?.id]);
+
+
+  const projectTasks = useMemo(() => {
+    if (!project?.id) {
+      return [];
+    }
+
+    return getProjectTasks(project.id);
+  }, [project?.id]);
+
+
+  const teamMembers = useMemo(() => {
+    if (!project?.id) {
+      return [];
+    }
+
+    return getProjectMembers(project.id);
+  }, [project?.id]);
 
   const StatCard = ({ icon, value, label }) => {
     return (
       <View style={styles.statCard}>
-
         <Text style={styles.statIcon}>
           {icon}
         </Text>
-
         <Text style={styles.statValue}>
           {value}
         </Text>
-
         <Text style={styles.statLabel}>
           {label}
         </Text>
-
       </View>
     );
   };
@@ -142,39 +127,66 @@ const ProjectDetails = () => {
       <>
         <TouchableOpacity style={styles.addTaskButton}>
           <Text style={styles.addTaskText}>
-            + Add Task
+            {Strings.buttonText.addTask}
           </Text>
         </TouchableOpacity>
-
         <View style={styles.taskList}>
-          {tasks.map(task => (
-            <TouchableOpacity
-              key={task.id}
-              style={styles.taskCard}
-              activeOpacity={0.8}
-            >
-              <View
-                style={[
-                  styles.taskDot,
-                  {
-                    backgroundColor: task.dotColor,
-                  },
-                ]}
-              />
+          {projectTasks.map(task => {
+            const assignedUser = getTaskUser(task);
+            const userName = assignedUser
+              ? `${assignedUser.firstName} ${assignedUser.lastName}`
+              : 'Unassigned';
 
-              <View style={styles.taskContent}>
-                <Text style={styles.taskTitle}>
-                  {task.title}
-                </Text>
+            const getTaskDotColor = status => {
+              switch (status) {
+                case 'Completed':
+                  return Colors.BagdeText;
 
-                <Text style={styles.taskUser}>
-                  {task.user}
-                </Text>
-              </View>
+                case 'In Progress':
+                  return Colors.primary;
 
-              <StatusBadge text={task.status} />
-            </TouchableOpacity>
-          ))}
+                case 'Backlog':
+                  return Colors.darkGray;
+
+                case 'Testing':
+                  return Colors.sucess;
+
+                default:
+                  return Colors.darkGray;
+              }
+            };
+            return (
+              <TouchableOpacity
+                key={task.id}
+                style={styles.taskCard}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.taskDot,
+                    {
+                      backgroundColor:
+                        getTaskDotColor(task.status),
+                    },
+                  ]}
+                />
+                <View style={styles.taskContent}>
+                  <Text
+                    style={styles.taskTitle}
+                    numberOfLines={1}
+                  >
+                    {task.title}
+                  </Text>
+                  <Text style={styles.taskUser}>
+                    {userName}
+                  </Text>
+                </View>
+                <StatusBadge
+                  text={task.status}
+                />
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </>
     );
@@ -183,28 +195,33 @@ const ProjectDetails = () => {
   const renderTeam = () => {
     return (
       <View style={styles.tabContent}>
-        {teamMembers.map(member => (
-          <View
-            key={member.id}
-            style={styles.memberCard}
-          >
-            <View style={styles.memberAvatar}>
-              <Text style={styles.memberInitials}>
-                {member.initials}
-              </Text>
+        {teamMembers.map(member => {
+          const initials = `${member.firstName?.[0] || '-'}${member.lastName?.[0] || '-'}`;
+          const isManager =
+            member.id === project.managerId;
+          return (
+            <View
+              key={member.id}
+              style={styles.memberCard}
+            >
+              <View style={styles.memberAvatar}>
+                <Text style={styles.memberInitials}>
+                  {initials}
+                </Text>
+              </View>
+              <View style={styles.memberInfo}>
+                <Text style={styles.memberName}>
+                  {member.firstName} {member.lastName}
+                </Text>
+                <Text style={styles.memberRole}>
+                  {isManager
+                    ? 'Project Manager'
+                    : member.role}
+                </Text>
+              </View>
             </View>
-
-            <View style={styles.memberInfo}>
-              <Text style={styles.memberName}>
-                {member.name}
-              </Text>
-
-              <Text style={styles.memberRole}>
-                {member.role}
-              </Text>
-            </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
     );
   };
@@ -231,12 +248,10 @@ const ProjectDetails = () => {
               >
                 {file.name}
               </Text>
-
               <Text style={styles.fileSize}>
                 {file.size}
               </Text>
             </View>
-
             <Text style={styles.fileArrow}>
               ›
             </Text>
@@ -255,18 +270,18 @@ const ProjectDetails = () => {
             style={styles.activityCard}
           >
             <View style={styles.activityDot} />
-
             <View style={styles.activityContent}>
               <Text style={styles.activityText}>
                 <Text style={styles.activityUser}>
                   {activity.user}
-                </Text>{' '}
-                {activity.action}{' '}
+                </Text>
+                {' '}
+                {activity.action}
+                {' '}
                 <Text style={styles.activityTarget}>
                   {activity.target}
                 </Text>
               </Text>
-
               <Text style={styles.activityTime}>
                 {activity.time}
               </Text>
@@ -276,9 +291,10 @@ const ProjectDetails = () => {
       </View>
     );
   };
-
   const renderActiveTab = () => {
+
     switch (activeTab) {
+
       case 'Tasks':
         return renderTasks();
 
@@ -295,80 +311,119 @@ const ProjectDetails = () => {
         return null;
     }
   };
+  if (!project) {
+    return null;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Header
-        title=''
+        title=""
         onBackPress={() => navigation.goBack()}
-        rightIcon={<EditIcon height={18} width={18} />}
-        onRightPress={() => navigation.navigate("EditProject", { project })}
+        rightIcon={
+          <EditIcon
+            height={18}
+            width={18}
+          />
+        }
+        onRightPress={() =>
+          navigation.navigate(
+            "EditProject",
+            {
+              project,
+            }
+          )
+        }
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+
         <View style={styles.projectHeader}>
-            <ProjectIcon
-              width={scale(45)}
-              height={scale(45)}
-            />
+          <ProjectIcon
+            width={scale(45)}
+            height={scale(45)}
+          />
           <View style={styles.projectInfo}>
             <View style={styles.nameRow}>
               <Text style={styles.projectName}>
                 {project.name}
               </Text>
-              <StatusBadge text={project.priority} />
+              <StatusBadge
+                text={project.priority}
+              />
             </View>
-
             <Text style={styles.manager}>
-              {project.manager}
+              {manager
+                ? `${manager.firstName} ${manager.lastName}`
+                : 'Unknown Manager'}
             </Text>
-
           </View>
-
         </View>
         <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>{Strings.projectScreen.label.progress}</Text>
-          <Text style={styles.progressValue}>
-            {project.progress}%
+          <Text style={styles.progressLabel}>
+            {Strings.projectScreen.label.progress}
           </Text>
-
+          <Text style={styles.progressValue}>
+            {progressData.progress}%
+          </Text>
         </View>
-
         <View style={styles.progressBackground}>
-
           <View
             style={[
               styles.progressFill,
               {
-                width: `${project.progress}%`,
+                width: `${progressData.progress}%`,
               },
             ]}
           />
-
         </View>
         <View style={styles.statistics}>
           <StatCard
-            icon={<TaskIcon height={15} width={15} color={Colors.primary} />}
-            value={tasks.length}
+            icon={
+              <TaskIcon
+                height={15}
+                width={15}
+                color={Colors.primary}
+              />
+            }
+            value={progressData.total}
             label="Tasks"
           />
           <StatCard
-            icon={<TeamIcon height={15} width={15} color={Colors.primary} />}
+            icon={
+              <TeamIcon
+                height={15}
+                width={15}
+                color={Colors.primary}
+              />
+            }
             value={teamMembers.length}
             label="Members"
           />
           <StatCard
-            icon={<CalendarIcon height={15} width={15} color={Colors.primary} />}
+            icon={
+              <CalendarIcon
+                height={15}
+                width={15}
+                color={Colors.primary}
+              />
+            }
             value={formatProjectDate(project.startDate)}
             label="Start"
           />
           <StatCard
-            icon={<FlagIcon height={15} width={15} />}
+            icon={
+              <FlagIcon
+                height={15}
+                width={15}
+              />
+            }
             value={formatProjectDate(project.endDate)}
             label="End"
           />
         </View>
+
         <View style={styles.innerTabs}>
           <TabSwitcher
             tabs={taskTabs}
@@ -384,6 +439,7 @@ const ProjectDetails = () => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -405,18 +461,19 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Numbers.num4
+    gap: Numbers.num4,
   },
   projectName: {
-    fontSize: fontSizes.lg,
+    flex: 1,
+    fontSize: fontSizes.xl,
     fontWeight: fontWeights.w700,
     color: Colors.textColor,
   },
   manager: {
     marginTop: Spacings.vxxs,
-    fontSize: fontSizes.sm,
+    fontSize: fontSizes.md,
     color: Colors.darkGray,
-    fontFamily: Fonts.regular
+    fontFamily: Fonts.regular,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -429,10 +486,10 @@ const styles = StyleSheet.create({
     color: Colors.textColor,
   },
   progressValue: {
-    fontSize: Spacings.xs,
+    fontSize: Spacings.sm,
     fontWeight: fontWeights.w700,
     color: Colors.textColor,
-    fontFamily: Fonts.semiBold
+    fontFamily: Fonts.semiBold,
   },
   progressBackground: {
     height: Spacings.xxs,
@@ -460,18 +517,18 @@ const styles = StyleSheet.create({
     paddingVertical: Spacings.vsm,
   },
   statIcon: {
-    fontSize: Spacings.xs,
+    fontSize: Spacings.md,
     color: Colors.primary,
     marginBottom: Spacings.vxxs,
   },
   statValue: {
-    fontSize: fontSizes.md,
+    fontSize: fontSizes.lg,
     fontWeight: fontWeights.w700,
     color: Colors.textColor,
   },
   statLabel: {
     marginTop: Spacings.vxxs,
-    fontSize:fontSizes.xxs,
+    fontSize: fontSizes.xs,
     color: Colors.darkGray,
   },
   innerTabs: {
@@ -480,12 +537,6 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.gray,
     marginHorizontal: scale(-16),
     paddingHorizontal: Spacings.lg,
-  },
-  innerTab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Spacings.vxs,
-    position: 'relative',
   },
   addTaskButton: {
     height: Spacings.varrowSize,
@@ -499,8 +550,8 @@ const styles = StyleSheet.create({
   },
   addTaskText: {
     color: Colors.primary,
-    fontSize: Spacings.xs,
-    fontWeight:fontWeights.w600,
+    fontSize: Spacings.sm,
+    fontWeight: fontWeights.w600,
   },
   taskList: {
     marginTop: Spacings.vxs,
@@ -527,12 +578,12 @@ const styles = StyleSheet.create({
     marginLeft: Spacings.sm,
   },
   taskTitle: {
-    fontSize:fontSizes.sm,
+    fontSize: fontSizes.md,
     color: Colors.textColor,
-    fontWeight:fontWeights.w600,
+    fontWeight: fontWeights.w600,
   },
   taskUser: {
-    fontSize:fontSizes.xs,
+    fontSize: fontSizes.sm,
     color: Colors.darkGray,
     marginTop: Spacings.vxxs,
   },
@@ -561,7 +612,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   memberInitials: {
-    fontSize: Spacings.xs,
+    fontSize: Spacings.sm,
     fontFamily: Fonts.semiBold,
     color: Colors.primary,
   },
@@ -570,7 +621,7 @@ const styles = StyleSheet.create({
     marginLeft: Spacings.xs,
   },
   memberName: {
-    fontSize: Spacings.sm,
+    fontSize: Spacings.md,
     fontFamily: Fonts.semiBold,
     color: Colors.textColor,
   },
@@ -599,7 +650,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fileType: {
-    fontSize:fontSizes.xxs,
+    fontSize: fontSizes.xs,
     fontFamily: Fonts.semiBold,
     color: Colors.primary,
   },
@@ -608,13 +659,13 @@ const styles = StyleSheet.create({
     marginLeft: Spacings.xs,
   },
   fileName: {
-    fontSize: fontSizes.sm,
+    fontSize: fontSizes.md,
     fontFamily: Fonts.semiBold,
     color: Colors.textColor,
   },
   fileSize: {
     marginTop: Spacings.vxxs,
-    fontSize:fontSizes.xxs,
+    fontSize: fontSizes.xxs,
     fontFamily: Fonts.regular,
     color: Colors.darkGray,
   },
@@ -636,14 +687,14 @@ const styles = StyleSheet.create({
     height: Spacings.xs,
     borderRadius: Spacings.md,
     backgroundColor: Colors.primary,
-    alignSelf:'center'
+    alignSelf: 'center',
   },
   activityContent: {
     flex: 1,
     marginLeft: Spacings.xs,
   },
   activityText: {
-    fontSize:fontSizes.xs,
+    fontSize: fontSizes.sm,
     color: Colors.darkGray,
     fontFamily: Fonts.regular,
     lineHeight: Spacings.vmd,

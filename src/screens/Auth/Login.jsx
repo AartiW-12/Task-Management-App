@@ -15,60 +15,56 @@ import LockIcon from '../../assets/images/Icons/LockIcon.svg'
 import MailIcon from '../../assets/images/Icons/MailIcon.svg'
 import { useNavigation } from '@react-navigation/native'
 import { googleSignIn, loginUser } from '../../services/authServices'
+import { customSnackbar } from '../../components/snackbar/SnackBar'
+import Loader from '../../components/loader/Loader'
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading , setLoading] = useState(false)
 
   const navigation = useNavigation()
 
   const handleSignIn = async () => {
     try {
       if (!email) {
-        Alert.alert("Email Required")
+        customSnackbar(Strings.passwordValidationRules.required.email, 'validation')
         return
       }
       if (!password) {
-        Alert.alert("Password Required")
+        customSnackbar(Strings.passwordValidationRules.required.password, 'validation')
         return
       }
+      setLoading(true)
       const user = await loginUser(email, password)
-      Alert.alert("LOGIN SUCESS")
+      customSnackbar(Strings.successMessages.loginSuccess, 'success')
     } catch (error) {
-      Alert.alert('LOGIN FAILED:', error.code)
-
-      if (error.code === 'auth/invalid-credential') {
-        Alert.alert('Invalid email or password')
+      console.log("error 1234", error.code)
+      if (error.code === 'auth/invalid-email') {
+        customSnackbar(Strings.errorMessages.invalidCredentials, 'error')
       }
 
       if (error.code === 'auth/user-not-found') {
-        Alert.alert('User does not exist')
+        customSnackbar(Strings.errorMessages.userNotExist, 'error')
       }
 
       if (error.code === 'auth/wrong-password') {
-        Alert.alert('Wrong password')
+        customSnackbar(Strings.errorMessages.incorrectPass, 'error')
       }
+
+    }
+    finally{
+      setLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
     try {
       const user = await googleSignIn()
-
-      console.log("GOOGLE USER:", user)
-      console.log("NAME:", user.displayName)
-      console.log("EMAIL:", user.email)
-
-      Alert.alert(
-        "GOOGLE LOGIN SUCCESS",
-        `Welcome ${user.displayName || user.email}`
-      )
+      customSnackbar(Strings.successMessages.googleLoginSuccess)
 
     } catch (err) {
-      Alert.alert(
-        "GOOGLE LOGIN FAILED",
-        err.message || err.code
-      )
+      customSnackbar(Strings.errorMessages.googleLoginFailed, 'error')
     }
   }
 
@@ -111,6 +107,7 @@ const Login = () => {
               value={email}
               onChangeText={setEmail}
               style={styles.input}
+              isEMail={true}
               leftIcon={<MailIcon width={15} height={15} />}
             />
             <Text style={styles.inputLabel}>{Strings.inputLabel.password}</Text>
@@ -124,7 +121,7 @@ const Login = () => {
             />
             <Text style={styles.activeLink} onPress={() => navigation.navigate("ForgotPassword")}>{Strings.forgotPassword}</Text>
             <Button
-              text={Strings.buttonText.signIn}
+              text={loading ? <Loader visible={true}/> : Strings.buttonText.signIn}
               onPress={handleSignIn}
               style={styles.btn}
               textStyle={styles.btnTextStyle}
@@ -166,7 +163,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.screenBackground,
-    paddingTop: Spacings.vxxl
   },
   scrollContainer: {
     flexGrow: 1,
@@ -214,6 +210,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacings.v
   },
   input: {
+    height: Numbers.num50,
     borderWidth: Numbers.p2,
     borderColor: Colors.textColor,
     alignSelf: 'center',

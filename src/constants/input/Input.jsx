@@ -15,6 +15,7 @@ function Input({
   style,
   secureTextEntry = false,
   multiline = false,
+  isEMail= false,
   numberOfLines = 1,
   textAlignVertical = 'center',
   placeholderTextColor = Colors.inputPlaceholder,
@@ -38,7 +39,7 @@ function Input({
         onChangeText={onChangeText}
         placeholderTextColor={placeholderTextColor}
         keyboardType={keyboardType}
-
+        autoCapitalize={isEMail? 'none' : 'characters'}
         secureTextEntry={secureTextEntry && !isPasswordVisible}
 
         multiline={multiline}

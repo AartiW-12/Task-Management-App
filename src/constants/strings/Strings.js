@@ -11,6 +11,7 @@ export const Strings = {
         subtitle2: 'Assign tasks, share files, and communicate seamlessly with your team in one place.',
         subtitle3: 'Get powerful insights with charts and reports to keep every project on schedule.'
     },
+    greeting : 'Good Morning 👋',
     buttonText: {
         skip: 'Skip',
         continue: 'Continue → ',
@@ -25,7 +26,8 @@ export const Strings = {
         addMember : "Add Members",
         createProject : 'Create Project',
         cancel : "Cancel",
-        saveChanges : "Save Changes"
+        saveChanges : "Save Changes",
+        addTask : '+ Add Task',
     },
 
     taskFlow: 'TaskFlow',
@@ -96,6 +98,10 @@ export const Strings = {
     successMessages: {
         checkEmail :'Check Your Email',
         resetLinkSent : 'password reset link has been sent',
+        loginSuccess : "Login Successfull",
+        googleLoginSuccess : "Successfully Logged In with google",
+        registrationComplete : 'Registration Completed',
+
     },
     errorMessages: {
         error: "ERROR",
@@ -106,6 +112,12 @@ export const Strings = {
         manyAttempts : 'Too Many Attempts',
         manyRequestError : 'Too many requests. Please try again later.',
         tryAgainMessage : 'Something went wrong. Please try again.',
+        loginFailed : "Login Failed",
+        invalidCredentials : 'Invalid Email or Password',
+        incorrectPass : 'Incorrect Password',
+        googleLoginFailed : "Google Login Failed",
+        strongPassError : "Password must be at least 6 characters long",
+
     },
     dashboardLables : {
         activeProjects : 'Active Projects',
@@ -128,5 +140,6 @@ export const Strings = {
     headers : {
         editProject :'Edit Project',
         newProject : 'New Project',
-    }
+    },
+    emptyList : 'No Records Found',
 }

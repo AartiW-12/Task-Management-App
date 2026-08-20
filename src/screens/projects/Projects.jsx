@@ -10,11 +10,6 @@ import ProjectIcon from '../../assets/images/bottomTab/Projects.svg';
 import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from '../../constants/style/ConstantStyling';
 import StatusBadge from '../../components/statusBadge/StatusBadge'
 import Searchbar from '../../components/searchbar/Searchbar'
-
-import {
-  logAppScreenView,
-  logAppEvent,
-} from '../../services/analyticsServices';
 import { Strings } from '../../constants/strings/Strings';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../constants/button/Button';
@@ -24,71 +19,8 @@ import TasksIcon from '../../assets/images/bottomTab/Tasks.svg'
 import TeamIcon from '../../assets/images/bottomTab/Team.svg'
 import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg'
 
-const projects = [
-  {
-    id: '1',
-    name: 'Mobile App Redesign',
-    manager: 'Alex Chen',
-    tasks: 34,
-    members: 6,
-    startDate: new Date(2026, 5, 1).getTime(),
-    endDate: new Date(2026, 11, 28).getTime(),
-    progress: 68,
-    priority: 'High',
-    status: 'Active',
-    statusText: 'In Progress',
-    color: Colors.primary,
-    iconBackground: '#EAF1FF',
-  },
-
-  {
-    id: '2',
-    name: 'API Integration v3',
-    manager: 'Sarah Kim',
-    tasks: 18,
-    members: 4,
-    startDate: new Date(2026, 0, 15).getTime(),
-    endDate: new Date(2026, 10, 15).getTime(),
-    progress: 23,
-    priority: 'Critical',
-    status: 'Active',
-    statusText: 'Todo',
-    color: '#8B43F5',
-    iconBackground: '#F0E5FF',
-  },
-
-  {
-    id: '3',
-    name: 'Dashboard Analytics',
-    manager: 'Mike Ross',
-    tasks: 12,
-    members: 3,
-    startDate: new Date(2026, 5, 1).getTime(),
-    endDate: new Date(2026, 11, 10).getTime(),
-    progress: 85,
-    priority: 'Medium',
-    status: 'Review',
-    statusText: 'Review',
-    color: '#23C96B',
-    iconBackground: '#E7F9EF',
-  },
-
-  {
-    id: '4',
-    name: 'E-Commerce Platform',
-    manager: 'Emma Davis',
-    tasks: 56,
-    members: 8,
-    startDate: new Date(2026, 6, 30).getTime(),
-    endDate: new Date(2026, 10, 30).getTime(),
-    progress: 100,
-    priority: 'Low',
-    status: 'Done',
-    statusText: 'Completed',
-    color: '#F5A623',
-    iconBackground: '#FFF3DD',
-  },
-];
+import { PROJECTS, getProjectProgress, getProjectManager, getProjectTaskCount, getProjectMemberCount,
+} from '../../constants/mockData/mockTaskData';
 
 const tabs = [
   {
@@ -113,27 +45,34 @@ const Projects = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchText, setSearchText] = useState('')
 
-  useEffect(() => {
-    logAppScreenView(
-      'Projects',
-      'ProjectsScreen'
-    );
-
-    logAppEvent('projects_opened');
-  }, []);
-
   const filteredProjects = useMemo(() => {
     const search = searchText.trim().toLowerCase();
-    return projects.filter(project => {
+    return PROJECTS.filter(project => {
       const matchesTab =
         activeTab === 'all' ||
         project.status === activeTab;
       const matchesSearch =
-        project.name.toLowerCase().includes(search) ||
-        project.manager.toLowerCase().includes(search);
+        project.name.toLowerCase().includes(search) 
+        // project.manager.toLowerCase().includes(search);
       return matchesTab && matchesSearch;
     });
   }, [activeTab, searchText]);
+
+  const getProgressColor = (status, progress) => {
+    if (status === 'Done' || progress === 100) {
+      return Colors.sucess;
+    }
+
+    if (status === 'Review') {
+      return Colors.primary;
+    }
+
+    if (progress < 30) {
+      return Colors.danger;
+    }
+
+    return Colors.primary;
+  };
 
   return (
     <SafeAreaView style={styles.container} >
@@ -170,102 +109,167 @@ const Projects = ({ navigation }) => {
         data={filteredProjects}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
-        keyboardDismissMode='on-drag'
+        keyboardDismissMode="on-drag"
         contentContainerStyle={styles.projectList}
-        renderItem={({ item: project }) => (
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.projectCard}
-            onPress={() =>
-              navigation.navigate('ProjectDetails', {
-                project,
-              })
-            }
-          >
-            <View style={styles.cardTopRow}>
-              <View
-                style={[
-                  styles.projectIconContainer,
-                  {
-                    backgroundColor: project.iconBackground,
-                  },
-                ]}
-              >
-                <ProjectIcon
-                  width={scale(19)}
-                  height={scale(19)}
-                  color={Colors.primary}
-                />
-              </View>
-              <View style={styles.projectInfo}>
-                <View style={styles.nameRow}>
+        renderItem={({ item: project }) => {
 
-                  <Text
-                    style={styles.projectName}
-                    numberOfLines={1}
-                  >
-                    {project.name}
-                  </Text>
-                  <StatusBadge text={project.priority} />
-                </View>
-                <Text style={styles.manager}>
-                  {project.manager}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <TasksIcon
-                  width={scale(11)}
-                  height={scale(11)}
-                  color={Colors.darkGray}
-                />
-                <Text style={styles.metaText}>
-                  {project.tasks}
-                </Text>
-              </View>
-              <View style={styles.metaItem}>
-                <TeamIcon
-                  width={scale(11)}
-                  height={scale(11)}
-                  color={Colors.darkGray}
-                />
-                <Text style={styles.metaText}>
-                  {project.members}
-                </Text>
-              </View>
-              <View style={styles.metaItem}>
-                <CalendarIcon
-                  width={scale(11)}
-                  height={scale(11)}
-                  color={Colors.darkGray}
-                />
-                <Text style={styles.metaText}>
-                  {formatProjectDate(project.endDate)}
-                </Text>
-              </View>
-              <View style={styles.statusWrapper}>
-                <StatusBadge text={project.statusText} />
-              </View>
-            </View>
-            <View style={styles.progressRow}>
-              <View style={styles.progressBackground}>
+          const progressData = getProjectProgress(project.id);
+
+          const progress = progressData?.progress ?? 0;
+
+          const progressColor = getProgressColor(
+            project.status,
+            progress
+          );
+
+          const manager = getProjectManager(project.id);
+
+          const taskCount = getProjectTaskCount(project.id);
+
+          const memberCount = getProjectMemberCount(project.id);
+
+          return (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={styles.projectCard}
+              onPress={() =>
+                navigation.navigate("ProjectDetails", {
+                  project,
+                })
+              }
+            >
+
+              {/* Project Header */}
+              <View style={styles.cardTopRow}>
+
                 <View
                   style={[
-                    styles.progressFill,
+                    styles.projectIconContainer,
                     {
-                      width: `${project.progress}%`,
-                      backgroundColor: project.color,
+                      backgroundColor:
+                        Colors.inputBackground,
                     },
                   ]}
-                />
+                >
+                  <ProjectIcon
+                    width={scale(19)}
+                    height={scale(19)}
+                    color={Colors.primary}
+                  />
+                </View>
+
+                <View style={styles.projectInfo}>
+
+                  <View style={styles.nameRow}>
+
+                    <Text
+                      style={styles.projectName}
+                      numberOfLines={1}
+                    >
+                      {project.name}
+                    </Text>
+
+                    <StatusBadge
+                      text={project.priority}
+                    />
+
+                  </View>
+
+                  <Text style={styles.manager}>
+                    {manager
+                      ? `${manager.firstName} ${manager.lastName}`
+                      : "Unknown Manager"}
+                  </Text>
+
+                </View>
+
               </View>
-              <Text style={styles.progressText}>
-                {project.progress}%
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
+
+              {/* Project Meta */}
+              <View style={styles.metaRow}>
+
+                {/* Tasks */}
+                <View style={styles.metaItem}>
+
+                  <TasksIcon
+                    width={scale(11)}
+                    height={scale(11)}
+                    color={Colors.darkGray}
+                  />
+
+                  <Text style={styles.metaText}>
+                    {taskCount}
+                  </Text>
+
+                </View>
+
+                {/* Members */}
+                <View style={styles.metaItem}>
+
+                  <TeamIcon
+                    width={scale(11)}
+                    height={scale(11)}
+                    color={Colors.darkGray}
+                  />
+
+                  <Text style={styles.metaText}>
+                    {memberCount}
+                  </Text>
+
+                </View>
+
+                {/* End Date */}
+                <View style={styles.metaItem}>
+
+                  <CalendarIcon
+                    width={scale(11)}
+                    height={scale(11)}
+                    color={Colors.darkGray}
+                  />
+
+                  <Text style={styles.metaText}>
+                    {console.log(project.endDate)}
+                    {formatProjectDate(project.endDate)}
+                  </Text>
+
+                </View>
+
+                {/* Status */}
+                <View style={styles.statusWrapper}>
+
+                  <StatusBadge
+                    text={project.statusText}
+                  />
+
+                </View>
+
+              </View>
+              <View style={styles.progressRow}>
+
+                <View style={styles.progressBackground}>
+
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${progress}%`,
+                        backgroundColor:
+                          progressColor,
+                      },
+                    ]}
+                  />
+
+                </View>
+
+                <Text style={styles.progressText}>
+                  {progress}%
+                </Text>
+
+              </View>
+
+            </TouchableOpacity>
+          );
+        }}
       />
     </SafeAreaView>
   );
@@ -276,9 +280,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.screenBackground,
-    paddingHorizontal:Numbers.num20,
-    paddingTop:Numbers.num16,
-    paddingBottom:Numbers.num50,
+    paddingHorizontal: Numbers.num20,
+    paddingTop: Spacings.vxl,
+    paddingBottom: Numbers.num50,
   },
   scrollContent: {
     paddingHorizontal: Spacings.lg,
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
   projectList: {
     gap: Spacings.sm,
     // paddingHorizontal:20,
-    paddingBottom:40
+    paddingBottom: 40
   },
 
   projectCard: {

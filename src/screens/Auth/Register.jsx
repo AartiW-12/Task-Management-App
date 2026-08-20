@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native'
 
 import { registerUser } from '../../services/authServices'
 import { createUserProfile } from '../../services/userServices'
+import { customSnackbar } from '../../components/snackbar/SnackBar'
 
 const Register = () => {
 
@@ -39,42 +40,46 @@ const Register = () => {
     try {
 
       if (!fname.trim()) {
-        Alert.alert(Strings.passwordValidationRules.firstName)
+        customSnackbar(Strings.passwordValidationRules.required.firstName, 'validation')
         return
       }
 
       if (!lName.trim()) {
-        Alert.alert(Strings.passwordValidationRules.lastName)
+        customSnackbar(Strings.passwordValidationRules.required.lastName, 'validation')
         return
       }
 
       if (!email.trim()) {
-        Alert.alert(Strings.passwordValidationRules.email)
+        customSnackbar(Strings.passwordValidationRules.required.email, 'validation')
         return
       }
 
       if (!phone.trim()) {
-        Alert.alert(Strings.passwordValidationRules.phone)
+        customSnackbar(Strings.passwordValidationRules.required.phone, 'validation')
         return
       }
 
       if (!company.trim()) {
-        Alert.alert(Strings.passwordValidationRules.company)
+        customSnackbar(Strings.passwordValidationRules.required.company, 'validation')
         return
       }
 
-      if (!pass) {
-        Alert.alert(Strings.passwordValidationRules.password)
+      if (!pass.trim()) {
+        customSnackbar(Strings.passwordValidationRules.required.password, 'validation')
         return
       }
 
-      if (pass !== cnfmPass) {
-        Alert.alert(Strings.passwordValidationRules.passwordNotMatch)
+      if (pass.trim() !== cnfmPass.trim()) {
+        customSnackbar(Strings.passwordValidationRules.required.passwordNotMatch, 'validation')
         return
       }
 
       if (!isTermsAccepted) {
-        Alert.alert(Strings.passwordValidationRules.termsConditions)
+        customSnackbar(Strings.passwordValidationRules.required.termsConditions, 'validation')
+        return
+      }
+      if(pass.trim().length <=5 ){
+        customSnackbar(Strings.errorMessages.strongPassError, 'error')
         return
       }
 
@@ -82,8 +87,6 @@ const Register = () => {
         email.trim(),
         pass
       )
-
-      Alert.alert('AUTH USER CREATED:', user.uid)
 
       await createUserProfile(user.uid, {
         firstName: fname.trim(),
@@ -93,13 +96,13 @@ const Register = () => {
         company: company.trim(),
       })
 
-      Alert.alert('REGISTRATION COMPLETED')
+      customSnackbar(Strings.successMessages.registrationComplete)
 
     } catch (error) {
-
-      Alert.alert('SIGN UP ERROR:', error.code)
-      Alert.alert('SIGN UP ERROR MESSAGE:', error.message)
-
+      console.log("SIGN UP Failed", error)
+      if(error.code == 'auth/invalid-email'){
+        customSnackbar(Strings.errorMessages.invalidEmail, 'error')
+      }
     }
   }
 
@@ -141,6 +144,7 @@ const Register = () => {
             <Input
               placeholder={Strings.placeholders.email}
               value={email}
+              isEMail={true}
               onChangeText={setEmail}
               leftIcon={<MailIcon height={15} width={15} />}
               style={styles.input}
@@ -149,6 +153,7 @@ const Register = () => {
             <Input
               placeholder={Strings.placeholders.phone}
               value={phone}
+              keyboardType='numeric'
               onChangeText={setPhone}
               leftIcon={<PhoneIcon height={15} width={15} />}
               style={styles.input}
