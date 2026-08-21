@@ -13,7 +13,9 @@ import DoneIcon from '../../assets/images/Icons/DoneIcon.svg'
 import { Strings } from "../../constants/strings/Strings";
 import StatusBadge from "../../components/statusBadge/StatusBadge";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PROJECTS, TASKS, getProjectProgress, getWeeklyProgress, } from "../../constants/mockData/mockTaskData";
+import { PROJECTS, TASKS, } from "../../constants/mockData/mockTaskData";
+import { getProjectProgress, getWeeklyProgress, } from '../../hooks/projectCommonFunctions'
+import { CommonStyles } from "../../constants/style/CommonStyles";
 
 
 const Dashboard = ({ navigation }) => {
@@ -108,8 +110,7 @@ const Dashboard = ({ navigation }) => {
     const chartWidth = 700;
     const chartHeight = 240;
 
-    const chartMax = Math.max(5, ...weeklyProgress.map((item) => item.completed)
-    );
+    const chartMax = Math.max(5, ...weeklyProgress.map((item) => item.completed));
 
     const chartPoints = weeklyProgress.map((item, index) => {
         const x =
@@ -176,7 +177,7 @@ const Dashboard = ({ navigation }) => {
     ];
 
     const activeProjects = PROJECTS.filter(
-        project => !isCompletedStatus(project.status)
+        project => (project.status === "Active")
     );
 
     return (
@@ -191,7 +192,7 @@ const Dashboard = ({ navigation }) => {
                             <Text style={styles.avatarText}>
                                 {userProfile
                                     ? `${userProfile.firstName?.charAt(0) || ""}${userProfile.lastName?.charAt(0) || ""}`
-                                    : "AC"}
+                                    : "--"}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.greetingContainer}>
@@ -228,9 +229,11 @@ const Dashboard = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+
                 <View style={styles.statisticsContainer}>
                     {dashboardStatistics.map(renderCategoryCard)}
                 </View>
+
                 <View style={styles.progressCard}>
                     <Text style={styles.sectionTitle}>
                         Weekly Progress
@@ -317,56 +320,59 @@ const Dashboard = ({ navigation }) => {
                         activeOpacity={0.7}
                     >
                         <Text style={styles.seeAll}>
-                            See All
+                            {Strings.dashboardLables.seeAll}
                         </Text>
                     </TouchableOpacity>
                 </View>
-                {activeProjects.map(project => {
-                    const progress = getProjectProgress(project.id);
-                    return (
-                        <TouchableOpacity
-                            key={project.id}
-                            style={styles.projectCard}
-                            activeOpacity={0.8}
-                            onPress={() => navigation.navigate("ProjectDetails", { project: project })}
-                        >
-                            <View style={styles.projectIcon}>
-                                <ProjectIcon
-                                    width={moderateScale(35)}
-                                    height={moderateScale(35)}
-                                />
-                            </View>
-                            <View style={styles.projectContent}>
-                                <View style={styles.projectTitleRow}>
-                                    <Text
-                                        style={styles.projectName}
-                                        numberOfLines={1}
-                                    >
-                                        {project.name}
-                                    </Text>
-                                    <StatusBadge
-                                        text={project.priority}
+                {activeProjects.length === 0 ? <View >
+                    <Text style={CommonStyles.emptyListText}>{Strings.noActiveProjects}</Text>
+                </View> :
+                    activeProjects.map(project => {
+                        const progress = getProjectProgress(project.id);
+                        return (
+                            <TouchableOpacity
+                                key={project.id}
+                                style={styles.projectCard}
+                                activeOpacity={0.8}
+                                onPress={() => navigation.navigate("ProjectDetails", { project: project })}
+                            >
+                                <View style={styles.projectIcon}>
+                                    <ProjectIcon
+                                        width={moderateScale(35)}
+                                        height={moderateScale(35)}
                                     />
                                 </View>
-                                <View style={styles.progressRow}>
-                                    <View style={styles.progressBackground}>
-                                        <View
-                                            style={[
-                                                styles.progressFill,
-                                                {
-                                                    width: `${progress.progress}%`,
-                                                },
-                                            ]}
+                                <View style={styles.projectContent}>
+                                    <View style={styles.projectTitleRow}>
+                                        <Text
+                                            style={styles.projectName}
+                                            numberOfLines={1}
+                                        >
+                                            {project.name}
+                                        </Text>
+                                        <StatusBadge
+                                            text={project.priority}
                                         />
                                     </View>
-                                    <Text style={styles.progressPercentage}>
-                                        {progress.progress}%
-                                    </Text>
+                                    <View style={styles.progressRow}>
+                                        <View style={styles.progressBackground}>
+                                            <View
+                                                style={[
+                                                    styles.progressFill,
+                                                    {
+                                                        width: `${progress.progress}%`,
+                                                    },
+                                                ]}
+                                            />
+                                        </View>
+                                        <Text style={styles.progressPercentage}>
+                                            {progress.progress}%
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                })}
+                            </TouchableOpacity>
+                        );
+                    })}
             </ScrollView>
         </SafeAreaView>
     );

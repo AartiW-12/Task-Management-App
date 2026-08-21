@@ -29,6 +29,7 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textColor,
+        tabBarHideOnKeyboard:true,
         tabBarStyle: {
           // height: Spacings.h65,
           position: 'absolute',

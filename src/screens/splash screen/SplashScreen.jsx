@@ -15,7 +15,6 @@ import Loader from '../../components/loader/Loader'
 const SplashScreen = () => {
     return (
         <View style={styles.container}>
-            <View >
             <LinearGradient
                 colors={[Colors.primary, Colors.gardient]}
                 start={{ x: 0, y: 0 }}
@@ -29,24 +28,24 @@ const SplashScreen = () => {
                 <View style={styles.content}>
                     <View style={styles.iconContainer}>
                         <TaskFlowIcon
-                            height={IconStyling.onboardingIconHeight}
-                            width={IconStyling.onboardingIconWidth}
+                            height={100}
+                            width={100}
                         />
                     </View>
 
                     <Text style={styles.heading}>{Strings.taskFlow}</Text>
                     <Text style={styles.appSlogen}>{Strings.appSlogen}</Text>
                 </View>
+                <View style={styles.loaderContainer}>
+                    <Loader visible={true} size='30'/>
+                </View>
             </LinearGradient>
-            {/* <Loader size='50'/> */}
-            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: CommonStyles.flex1,
-
+    container:{ flex:1},
     splashBackground: {
         flex: 1,
         backgroundColor: Colors.primary,
@@ -87,5 +86,8 @@ const styles = StyleSheet.create({
         opacity: Numbers.p5,
         textAlign: 'center',
     },
+    loaderContainer : {
+        paddingTop:Spacings.vheading
+    }
 });
 export default SplashScreen

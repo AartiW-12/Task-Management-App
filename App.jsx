@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId:'1073349498426-hf0g72au8n3c335h8tj7ti9kv6hbujde.apps.googleusercontent.com'
+      webClientId:process.env.WEB_CLIENT_ID
     })
   },[])
   return (

@@ -142,4 +142,12 @@ export const Strings = {
         newProject : 'New Project',
     },
     emptyList : 'No Records Found',
+    emptyTasks : 'No Tasks Created for ',
+    emptyTeam : 'No Team Members Found for ',
+    emptyActivity : 'No Activities Found for ',
+    emptyFiles : 'No Files Found for ',
+    emptyProjects : 'No Projects Yet',
+    createFirstProject : "Create Your First Project To Start Managing Work",
+    noActiveProjects : 'No Active Projects Found',
+
 }

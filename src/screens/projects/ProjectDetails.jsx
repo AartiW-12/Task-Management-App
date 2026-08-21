@@ -1,9 +1,8 @@
-
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity,} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, } from 'react-native';
 import { scale } from 'react-native-size-matters';
 import ProjectIcon from '../../assets/images/Icons/ProjectsIcon.svg';
-import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings,} from '../../constants/style/ConstantStyling';
+import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings, } from '../../constants/style/ConstantStyling';
 import Header from '../../components/header/Header';
 import EditIcon from '../../assets/images/Icons/EditIcon.svg';
 import StatusBadge from '../../components/statusBadge/StatusBadge';
@@ -13,10 +12,11 @@ import TeamIcon from '../../assets/images/bottomTab/Team.svg';
 import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg';
 import FlagIcon from '../../assets/images/Icons/FlagIcon.svg';
 import TabSwitcher from '../../components/tabSwitcher/TabSwitcher';
-import { useNavigation, useRoute,} from '@react-navigation/native';
+import { useNavigation, useRoute, } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatProjectDate } from '../../constants/function/FormatProjectDate';
-import { getProjectProgress, getProjectManager, getProjectTasks, getProjectMembers, getTaskUser,} from '../../constants/mockData/mockTaskData';
+import { getProjectProgress, getProjectManager, getProjectTasks, getProjectMembers, getTaskUser, } from '../../hooks/projectCommonFunctions';
+import { CommonStyles } from '../../constants/style/CommonStyles';
 
 
 const taskTabs = [
@@ -39,22 +39,22 @@ const taskTabs = [
 ];
 
 const files = [
-  {
-    id: '1',
-    name: 'Project Requirements.pdf',
-    type: 'PDF',
-    size: '2.4 MB',
-  },
+  // {
+  //   id: '1',
+  //   name: 'Project Requirements.pdf',
+  //   type: 'PDF',
+  //   size: '2.4 MB',
+  // },
 ];
 
 const activities = [
-  {
-    id: '1',
-    user: 'Alex Chen',
-    action: 'created a new task',
-    target: 'Design system component library',
-    time: '10 min ago',
-  },
+  // {
+  //   id: '1',
+  //   user: 'Alex Chen',
+  //   action: 'created a new task',
+  //   target: 'Design system component library',
+  //   time: '10 min ago',
+  // },
 ];
 
 
@@ -64,8 +64,10 @@ const ProjectDetails = () => {
   const route = useRoute();
 
   const project = route?.params?.project;
+  // console.log(project)
 
   const [activeTab, setActiveTab] = useState('Tasks');
+
   const progressData = useMemo(() => {
     if (!project?.id) {
       return {
@@ -131,62 +133,65 @@ const ProjectDetails = () => {
           </Text>
         </TouchableOpacity>
         <View style={styles.taskList}>
-          {projectTasks.map(task => {
-            const assignedUser = getTaskUser(task);
-            const userName = assignedUser
-              ? `${assignedUser.firstName} ${assignedUser.lastName}`
-              : 'Unassigned';
+          {projectTasks.length === 0 ? <View style={CommonStyles.emptyList}>
+            <Text style={CommonStyles.emptyListText}>{Strings.emptyTasks}{' '}{project.name}</Text>
+          </View> :
+            projectTasks.map(task => {
+              const assignedUser = getTaskUser(task);
+              const userName = assignedUser
+                ? `${assignedUser.firstName} ${assignedUser.lastName}`
+                : 'Unassigned';
 
-            const getTaskDotColor = status => {
-              switch (status) {
-                case 'Completed':
-                  return Colors.BagdeText;
+              const getTaskDotColor = status => {
+                switch (status) {
+                  case 'Completed':
+                    return Colors.BagdeText;
 
-                case 'In Progress':
-                  return Colors.primary;
+                  case 'In Progress':
+                    return Colors.primary;
 
-                case 'Backlog':
-                  return Colors.darkGray;
+                  case 'Backlog':
+                    return Colors.darkGray;
 
-                case 'Testing':
-                  return Colors.sucess;
+                  case 'Testing':
+                    return Colors.sucess;
 
-                default:
-                  return Colors.darkGray;
-              }
-            };
-            return (
-              <TouchableOpacity
-                key={task.id}
-                style={styles.taskCard}
-                activeOpacity={0.8}
-              >
-                <View
-                  style={[
-                    styles.taskDot,
-                    {
-                      backgroundColor:
-                        getTaskDotColor(task.status),
-                    },
-                  ]}
-                />
-                <View style={styles.taskContent}>
-                  <Text
-                    style={styles.taskTitle}
-                    numberOfLines={1}
-                  >
-                    {task.title}
-                  </Text>
-                  <Text style={styles.taskUser}>
-                    {userName}
-                  </Text>
-                </View>
-                <StatusBadge
-                  text={task.status}
-                />
-              </TouchableOpacity>
-            );
-          })}
+                  default:
+                    return Colors.darkGray;
+                }
+              };
+              return (
+                <TouchableOpacity
+                  key={task.id}
+                  style={styles.taskCard}
+                  activeOpacity={0.8}
+                >
+                  <View
+                    style={[
+                      styles.taskDot,
+                      {
+                        backgroundColor:
+                          getTaskDotColor(task.status),
+                      },
+                    ]}
+                  />
+                  <View style={styles.taskContent}>
+                    <Text
+                      style={styles.taskTitle}
+                      numberOfLines={1}
+                    >
+                      {task.title}
+                    </Text>
+                    <Text style={styles.taskUser}>
+                      {userName}
+                    </Text>
+                  </View>
+                  <StatusBadge
+                    text={task.status}
+                  />
+                </TouchableOpacity>
+              );
+            })}
         </View>
       </>
     );
@@ -195,7 +200,9 @@ const ProjectDetails = () => {
   const renderTeam = () => {
     return (
       <View style={styles.tabContent}>
-        {teamMembers.map(member => {
+        {teamMembers.length === 0 ? <View style={CommonStyles.emptyList}>
+          <Text style={CommonStyles.emptyListText}>{Strings.emptyTeam}</Text>
+        </View> : teamMembers.map(member => {
           const initials = `${member.firstName?.[0] || '-'}${member.lastName?.[0] || '-'}`;
           const isManager =
             member.id === project.managerId;
@@ -229,7 +236,9 @@ const ProjectDetails = () => {
   const renderFiles = () => {
     return (
       <View style={styles.tabContent}>
-        {files.map(file => (
+        {files.length === 0 ? <View style={CommonStyles.emptyList}>
+          <Text style={CommonStyles.emptyListText}>{Strings.emptyFiles}{' '}{project.name}</Text>
+        </View> : files.map(file => (
           <TouchableOpacity
             key={file.id}
             style={styles.fileCard}
@@ -264,7 +273,9 @@ const ProjectDetails = () => {
   const renderActivity = () => {
     return (
       <View style={styles.tabContent}>
-        {activities.map(activity => (
+        {activities.length === 0 ? <View style={CommonStyles.emptyList}>
+            <Text style={CommonStyles.emptyListText}>{Strings.emptyActivity}{' '}{project.name}</Text>
+        </View> :  activities.map(activity => (
           <View
             key={activity.id}
             style={styles.activityCard}
@@ -326,12 +337,7 @@ const ProjectDetails = () => {
           />
         }
         onRightPress={() =>
-          navigation.navigate(
-            "EditProject",
-            {
-              project,
-            }
-          )
+          navigation.navigate("ProjectForm",{project: project , mode: 'edit'})
         }
       />
       <ScrollView

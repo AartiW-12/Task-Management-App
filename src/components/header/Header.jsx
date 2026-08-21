@@ -57,7 +57,6 @@ const Header = ({
         </Text>
       </View>
 
-      {/* RIGHT */}
       <View style={styles.rightContainer}>
         {rightIcon && (
           <TouchableOpacity
@@ -82,7 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: scale(16),
-    backgroundColor: Colors.screenBackground,
+    backgroundColor: Colors.white,
+    borderBottomWidth:1,
+    borderBottomColor:Colors.gray,
   },
 
   leftContainer: {

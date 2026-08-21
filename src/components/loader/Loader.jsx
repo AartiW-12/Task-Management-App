@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-    ActivityIndicator,
-    StyleSheet,
-    View,
-} from 'react-native';
-
+import {ActivityIndicator,} from 'react-native';
 import {Colors} from '../../constants/style/ConstantStyling';
 
 const Loader = ({
@@ -15,7 +10,6 @@ const Loader = ({
     if (!visible) {
         return null;
     }
-
     return (
         <ActivityIndicator
             size={size}

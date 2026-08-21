@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback,} from 'react-native';
-import { scale, verticalScale, moderateScale,} from 'react-native-size-matters';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback, } from 'react-native';
+import { scale, verticalScale, moderateScale, } from 'react-native-size-matters';
 import Header from '../../components/header/Header';
-
-import { Colors, Fonts, fontSizes, Numbers, Spacings,} from '../../constants/style/ConstantStyling';
+import { Colors, Fonts, fontSizes, Numbers, Spacings, } from '../../constants/style/ConstantStyling';
 import { db } from '../../firebase/firebaseConfig';
-
-
-
 import DeleteIcon from '../../assets/images/Icons/DeleteIcon.svg'
 import ProjectNameIcon from '../../assets/images/Icons/ProjectNameIcon.svg'
 import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg'
 import AddMemberIcon from '../../assets/images/Icons/AddMembers.svg'
-
 import { Strings } from '../../constants/strings/Strings';
 import Input from '../../constants/input/Input';
 import Button from '../../constants/button/Button';
@@ -20,6 +15,8 @@ import DatePicker from 'react-native-date-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CommonStyles } from '../../constants/style/CommonStyles';
 import { customSnackbar } from '../../components/snackbar/SnackBar';
+import { getProjectManager, getProjectMembers } from '../../hooks/projectCommonFunctions';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const PRIORITIES = [
     'Low',
@@ -29,12 +26,9 @@ const PRIORITIES = [
 ];
 
 const STATUS_OPTIONS = [
-    'Todo',
-    'In Progress',
+    'Active',
     'Review',
-    'Completed',
-    'Backlog',
-    'Testing',
+    'Done'
 ];
 
 const DUMMY_USERS = [
@@ -63,26 +57,33 @@ const DUMMY_USERS = [
         role: 'Project Manager',
     },
 ];
-const ProjectForm = ({
-    navigation,
-    route,
-    mode = 'create',
-}) => {
-    const isEdit = mode === 'edit';
+
+const ProjectForm = () => {
+
+    const navigation = useNavigation()
+    const route = useRoute()
+
     const project = route?.params?.project || null;
+    const mode = route?.params?.mode || 'create';
+
+     const isEdit = mode === 'edit';
+
+    console.log("new", project)
+    const teamMemberArray = project?.id ? getProjectMembers(project.id) : []
+    const managerName = project?.id ? getProjectManager(project.id) : null
 
     //state for input values    
     const [projectName, setProjectName] = useState(project?.name || '');
     const [description, setDescription] = useState(project?.description || '');
-    const [priority, setPriority] = useState(project?.priority || 'High');
-    const [status, setStatus] = useState(project?.status || '');
-    const [manager, setManager] = useState(project?.manager || null);
-    const [teamMembers, setTeamMembers] = useState(project?.teamMembers || []);
+    const [priority, setPriority] = useState(project?.priority || '');
+    const [status, setStatus] = useState(project?.statusText || '');
+    const [manager, setManager] = useState(managerName || '');
+    const [teamMembers, setTeamMembers] = useState(teamMemberArray || []);
 
     //state for modals
-    const [showStatusModal, setShowStatusModal] =useState(false);
-    const [showManagerModal, setShowManagerModal] =useState(false);
-    const [showTeamModal, setShowTeamModal] =useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [showManagerModal, setShowManagerModal] = useState(false);
+    const [showTeamModal, setShowTeamModal] = useState(false);
 
     //state for data and loading
     const [loading, setLoading] = useState(false);
@@ -102,36 +103,36 @@ const ProjectForm = ({
 
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
- 
 
-    useEffect(() => {
-        const loadUsers = async () => {
-            try {
-                const snapshot = await db
-                    .collection('users')
-                    .get();
-                const firestoreUsers = [];
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    firestoreUsers.push({
-                        id: doc.id,
-                        firstName: data.firstName || '',
-                        lastName: data.lastName || '',
-                        role: data.role || 'Team Member',
-                    });
-                });
-                if (firestoreUsers.length > 0) {
-                    setUsers(firestoreUsers);
-                }
-            } catch (error) {
-                console.log(
-                    'ERROR LOADING USERS:',
-                    error
-                );
-            }
-        };
-        loadUsers();
-    }, []);
+
+    // useEffect(() => {
+    //     const loadUsers = async () => {
+    //         try {
+    //             const snapshot = await db
+    //                 .collection('users')
+    //                 .get();
+    //             const firestoreUsers = [];
+    //             snapshot.forEach(doc => {
+    //                 const data = doc.data();
+    //                 firestoreUsers.push({
+    //                     id: doc.id,
+    //                     firstName: data.firstName || '',
+    //                     lastName: data.lastName || '',
+    //                     role: data.role || 'Team Member',
+    //                 });
+    //             });
+    //             if (firestoreUsers.length > 0) {
+    //                 setUsers(firestoreUsers);
+    //             }
+    //         } catch (error) {
+    //             console.log(
+    //                 'ERROR LOADING USERS:',
+    //                 error
+    //             );
+    //         }
+    //     };
+    //     loadUsers();
+    // }, []);
 
     const toggleTeamMember = member => {
         const alreadySelected =
@@ -270,9 +271,12 @@ const ProjectForm = ({
         // } finally {
         //     setLoaing(false);
         // }
+
+
         customSnackbar("!  Created ", 'validation')
         navigation.goBack()
     };
+
     const handleDelete = () => {
         const projectId =
             project?.id ||
@@ -647,10 +651,6 @@ const SelectionModal = ({
     onClose,
     isUser = false,
 }) => {
-
-    useEffect(() => {
-        console.log('MODAL VISIBLE:', visible);
-    }, [visible]);
     return (
         <Modal
             visible={visible}
@@ -660,87 +660,87 @@ const SelectionModal = ({
         >
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalOverlay}>
-                <View style={styles.modalContainer}>
+                    <View style={styles.modalContainer}>
 
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>
-                            {title}
-                        </Text>
-
-                        <TouchableOpacity
-                            onPress={onClose}
-                            hitSlop={{
-                                top: 10,
-                                bottom: 10,
-                                left: 10,
-                                right: 10,
-                            }}
-                        >
-                            <Text style={styles.modalClose}>
-                                ×
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>
+                                {title}
                             </Text>
-                        </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={onClose}
+                                hitSlop={{
+                                    top: 10,
+                                    bottom: 10,
+                                    left: 10,
+                                    right: 10,
+                                }}
+                            >
+                                <Text style={styles.modalClose}>
+                                    ×
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <FlatList
+                            data={data}
+                            keyExtractor={(item, index) =>
+                                isUser
+                                    ? item.id
+                                    : `${item}-${index}`
+                            }
+                            ListEmptyComponent={
+                                <View style={CommonStyles.emptyList}>
+                                    <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
+                                </View>
+                            }
+                            renderItem={({ item }) => {
+                                const value = isUser
+                                    ? item.id
+                                    : item;
+
+                                const isSelected =
+                                    selected === value;
+
+                                return (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.option,
+                                            isSelected &&
+                                            styles.optionSelected,
+                                        ]}
+                                        onPress={() => onSelect(item)}
+                                    >
+                                        {isUser ? (
+                                            <>
+                                                <View style={styles.optionAvatar}>
+                                                    <Text style={styles.optionAvatarText}>
+                                                        {item.firstName?.charAt(0)}
+                                                        {item.lastName?.charAt(0)}
+                                                    </Text>
+                                                </View>
+
+                                                <View>
+                                                    <Text style={styles.optionText}>
+                                                        {item.firstName} {item.lastName}
+                                                    </Text>
+
+                                                    <Text style={styles.optionSubText}>
+                                                        {item.role}
+                                                    </Text>
+                                                </View>
+                                            </>
+                                        ) : (
+                                            <Text style={styles.optionText}>
+                                                {item}
+                                            </Text>
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
                     </View>
-
-                    <FlatList
-                        data={data}
-                        keyExtractor={(item, index) =>
-                            isUser
-                                ? item.id
-                                : `${item}-${index}`
-                        }
-                        ListEmptyComponent={
-                            <View style={CommonStyles.emptyList}>
-                                <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
-                            </View>
-                        }
-                        renderItem={({ item }) => {
-                            const value = isUser
-                                ? item.id
-                                : item;
-
-                            const isSelected =
-                                selected === value;
-
-                            return (
-                                <TouchableOpacity
-                                    style={[
-                                        styles.option,
-                                        isSelected &&
-                                        styles.optionSelected,
-                                    ]}
-                                    onPress={() => onSelect(item)}
-                                >
-                                    {isUser ? (
-                                        <>
-                                            <View style={styles.optionAvatar}>
-                                                <Text style={styles.optionAvatarText}>
-                                                    {item.firstName?.charAt(0)}
-                                                    {item.lastName?.charAt(0)}
-                                                </Text>
-                                            </View>
-
-                                            <View>
-                                                <Text style={styles.optionText}>
-                                                    {item.firstName} {item.lastName}
-                                                </Text>
-
-                                                <Text style={styles.optionSubText}>
-                                                    {item.role}
-                                                </Text>
-                                            </View>
-                                        </>
-                                    ) : (
-                                        <Text style={styles.optionText}>
-                                            {item}
-                                        </Text>
-                                    )}
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
                 </View>
-            </View>
             </TouchableWithoutFeedback>
         </Modal>
     );
@@ -763,78 +763,78 @@ const TeamSelectionModal = ({
         >
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalOverlay}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>
-                            Add Team Members
-                        </Text>
-                        <TouchableOpacity
-                            onPress={onClose}
-                        >
-                            <Text style={styles.modalClose}>
-                                ×
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>
+                                Add Team Members
                             </Text>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={users}
-                        keyExtractor={item => item.id}
-                        ListEmptyComponent={
-                            <View style={CommonStyles.emptyList}>
-                                <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
-                            </View>
-                        }
-                        renderItem={({ item }) => {
-                            const isSelected =
-                                selected.some(
-                                    member =>
-                                        member.id === item.id
-                                );
-                            return (
-                                <TouchableOpacity
-                                    style={styles.option}
-                                    onPress={() =>
-                                        onToggle(item)
-                                    }
-                                >
-                                    <View style={styles.optionAvatar}>
-                                        <Text style={styles.optionAvatarText}>
-                                            {item.firstName?.charAt(0)}
-                                            {item.lastName?.charAt(0)}
-                                        </Text>
-                                    </View>
-                                    <View style={{ flex: 1 }}>
-                                        <Text style={styles.optionText}>
-                                            {item.firstName} {item.lastName}
-                                        </Text>
-                                        <Text style={styles.optionSubText}>
-                                            {item.role}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={[
-                                            styles.checkbox,
-                                            isSelected &&
-                                            styles.checkboxSelected,
-                                        ]}
+                            <TouchableOpacity
+                                onPress={onClose}
+                            >
+                                <Text style={styles.modalClose}>
+                                    ×
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <FlatList
+                            data={users}
+                            keyExtractor={item => item.id}
+                            ListEmptyComponent={
+                                <View style={CommonStyles.emptyList}>
+                                    <Text style={CommonStyles.emptyListText}>{Strings.emptyList}</Text>
+                                </View>
+                            }
+                            renderItem={({ item }) => {
+                                const isSelected =
+                                    selected.some(
+                                        member =>
+                                            member.id === item.id
+                                    );
+                                return (
+                                    <TouchableOpacity
+                                        style={styles.option}
+                                        onPress={() =>
+                                            onToggle(item)
+                                        }
                                     >
-                                        {isSelected && (
-                                            <Text style={styles.checkboxText}>
-                                                ✓
+                                        <View style={styles.optionAvatar}>
+                                            <Text style={styles.optionAvatarText}>
+                                                {item.firstName?.charAt(0)}
+                                                {item.lastName?.charAt(0)}
                                             </Text>
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
-                    <Button
-                        text={'Done'}
-                        onPress={onClose}
-                        textStyle={styles.modalDoneText}
-                    />
+                                        </View>
+                                        <View style={{ flex: 1 }}>
+                                            <Text style={styles.optionText}>
+                                                {item.firstName} {item.lastName}
+                                            </Text>
+                                            <Text style={styles.optionSubText}>
+                                                {item.role}
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.checkbox,
+                                                isSelected &&
+                                                styles.checkboxSelected,
+                                            ]}
+                                        >
+                                            {isSelected && (
+                                                <Text style={styles.checkboxText}>
+                                                    ✓
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
+                        <Button
+                            text={'Done'}
+                            onPress={onClose}
+                            textStyle={styles.modalDoneText}
+                        />
+                    </View>
                 </View>
-            </View>
             </TouchableWithoutFeedback>
         </Modal>
     );
@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
         color: Colors.darkGray,
         fontFamily: Fonts.semiBold,
         paddingTop: 10,
-        paddingBottom:5
+        paddingBottom: 5
     },
     inputContainer: {
         height: verticalScale(30),

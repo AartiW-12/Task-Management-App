@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: 'center',
-    paddingVertical: Spacings.vxxl
+    paddingVertical: Spacings.vxxl,
+    paddingTop: Spacings.w15
   },
 
   iconContainer: {

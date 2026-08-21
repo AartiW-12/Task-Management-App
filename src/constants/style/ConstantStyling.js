@@ -10,7 +10,7 @@ export const Colors = {
     initialsBackground : '#EAF1FF',
     selectedOption : '#F0F5FF',
     validation : '#f2b06f',
-
+    fileBackground : '#dee8fc',
     white: '#FFFFFF',
 
 
@@ -192,6 +192,6 @@ export const Numbers = {
     zp1:0.1,
 }
 export const IconStyling = {
-    onboardingIconHeight:100,
-    onboardingIconWidth: 100,
+    onboardingIconHeight:180,
+    onboardingIconWidth: 180,
 }

@@ -1,11 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, } from 'react-native';
-
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, } from 'react-native';
 import { scale, verticalScale, } from 'react-native-size-matters';
-
 import TabSwitcher from '../../components/tabSwitcher/TabSwitcher';
-
 import ProjectIcon from '../../assets/images/bottomTab/Projects.svg';
 import { Colors, Fonts, fontSizes, fontWeights, Numbers, Spacings } from '../../constants/style/ConstantStyling';
 import StatusBadge from '../../components/statusBadge/StatusBadge'
@@ -14,13 +10,13 @@ import { Strings } from '../../constants/strings/Strings';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../constants/button/Button';
 import { formatProjectDate } from '../../constants/function/FormatProjectDate'
-
 import TasksIcon from '../../assets/images/bottomTab/Tasks.svg'
 import TeamIcon from '../../assets/images/bottomTab/Team.svg'
 import CalendarIcon from '../../assets/images/Icons/CalendarIcon.svg'
-
-import { PROJECTS, getProjectProgress, getProjectManager, getProjectTaskCount, getProjectMemberCount,
-} from '../../constants/mockData/mockTaskData';
+import { PROJECTS, } from '../../constants/mockData/mockTaskData';
+import { getProjectProgress, getProjectManager, getProjectTaskCount, getProjectMemberCount,  } from '../../hooks/projectCommonFunctions'
+import { CommonStyles } from '../../constants/style/CommonStyles';
+import EmptyProjects from '../../components/emptyState/EmptyProjects'
 
 const tabs = [
   {
@@ -52,8 +48,8 @@ const Projects = ({ navigation }) => {
         activeTab === 'all' ||
         project.status === activeTab;
       const matchesSearch =
-        project.name.toLowerCase().includes(search) 
-        // project.manager.toLowerCase().includes(search);
+        project.name.toLowerCase().includes(search)
+      // project.manager.toLowerCase().includes(search);
       return matchesTab && matchesSearch;
     });
   }, [activeTab, searchText]);
@@ -62,215 +58,185 @@ const Projects = ({ navigation }) => {
     if (status === 'Done' || progress === 100) {
       return Colors.sucess;
     }
-
     if (status === 'Review') {
       return Colors.primary;
     }
-
     if (progress < 30) {
       return Colors.danger;
     }
-
     return Colors.primary;
   };
 
   return (
     <SafeAreaView style={styles.container} >
-      <View style={styles.header}>
-        <Text style={styles.title}>
-          Projects
-        </Text>
-        <Button
-          text={'+'}
-          textStyle={styles.plus}
-          style={styles.addButton}
-          onPress={() => navigation.navigate("ProjectForm")}
-        />
-      </View>
-      <View>
-        <Searchbar
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder={Strings.projectScreen.searchPlaceholder}
-          containerStyle={styles.searchBar}
-        />
-      </View>
+      <KeyboardAvoidingView
+        style={CommonStyles.flex1}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            Projects
+          </Text>
+          <Button
+            text={'+'}
+            textStyle={styles.plus}
+            style={styles.addButton}
+            onPress={() => navigation.navigate("ProjectForm")}
+          />
+        </View>
+        <View>
+          <Searchbar
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder={Strings.projectScreen.searchPlaceholder}
+            containerStyle={styles.searchBar}
+          />
+        </View>
 
-      <View style={styles.tabsContainer}>
+        <View style={styles.tabsContainer}>
 
-        <TabSwitcher
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabPress={setActiveTab}
-        />
+          <TabSwitcher
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabPress={setActiveTab}
+          />
 
-      </View>
-      <FlatList
-        data={filteredProjects}
-        keyExtractor={item => item.id}
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={styles.projectList}
-        renderItem={({ item: project }) => {
+        </View>
+        <FlatList
+          data={filteredProjects}
+          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
+          keyboardDismissMode="on-drag"
+          ListEmptyComponent={
+            <EmptyProjects />
+          }
+          contentContainerStyle={styles.projectList}
+          renderItem={({ item: project }) => {
 
-          const progressData = getProjectProgress(project.id);
+            const progressData = getProjectProgress(project.id);
 
-          const progress = progressData?.progress ?? 0;
+            const progress = progressData?.progress ?? 0;
 
-          const progressColor = getProgressColor(
-            project.status,
-            progress
-          );
+            const progressColor = getProgressColor(
+              project.status,
+              progress
+            );
 
-          const manager = getProjectManager(project.id);
+            const manager = getProjectManager(project.id);
 
-          const taskCount = getProjectTaskCount(project.id);
+            const taskCount = getProjectTaskCount(project.id);
 
-          const memberCount = getProjectMemberCount(project.id);
+            const memberCount = getProjectMemberCount(project.id);
 
-          return (
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={styles.projectCard}
-              onPress={() =>
-                navigation.navigate("ProjectDetails", {
-                  project,
-                })
-              }
-            >
-
-              {/* Project Header */}
-              <View style={styles.cardTopRow}>
-
-                <View
-                  style={[
-                    styles.projectIconContainer,
-                    {
-                      backgroundColor:
-                        Colors.inputBackground,
-                    },
-                  ]}
-                >
-                  <ProjectIcon
-                    width={scale(19)}
-                    height={scale(19)}
-                    color={Colors.primary}
-                  />
-                </View>
-
-                <View style={styles.projectInfo}>
-
-                  <View style={styles.nameRow}>
-
-                    <Text
-                      style={styles.projectName}
-                      numberOfLines={1}
-                    >
-                      {project.name}
+            return (
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={styles.projectCard}
+                onPress={() =>
+                  navigation.navigate("ProjectDetails", {
+                    project,
+                  })
+                }
+              >
+                <View style={styles.cardTopRow}>
+                  <View
+                    style={[
+                      styles.projectIconContainer,
+                      {
+                        backgroundColor:
+                          Colors.inputBackground,
+                      },
+                    ]}
+                  >
+                    <ProjectIcon
+                      width={scale(19)}
+                      height={scale(19)}
+                      color={Colors.primary}
+                    />
+                  </View>
+                  <View style={styles.projectInfo}>
+                    <View style={styles.nameRow}>
+                      <Text
+                        style={styles.projectName}
+                        numberOfLines={1}
+                      >
+                        {project.name}
+                      </Text>
+                      <StatusBadge
+                        text={project.priority}
+                      />
+                    </View>
+                    <Text style={styles.manager}>
+                      {manager
+                        ? `${manager.firstName} ${manager.lastName}`
+                        : "Unknown Manager"}
                     </Text>
-
+                  </View>
+                </View>
+                <View style={styles.metaRow}>
+                  <View style={styles.metaItem}>
+                    <TasksIcon
+                      width={scale(11)}
+                      height={scale(11)}
+                      color={Colors.darkGray}
+                    />
+                    <Text style={styles.metaText}>
+                      {taskCount}
+                    </Text>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <TeamIcon
+                      width={scale(11)}
+                      height={scale(11)}
+                      color={Colors.darkGray}
+                    />
+                    <Text style={styles.metaText}>
+                      {memberCount}
+                    </Text>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <CalendarIcon
+                      width={scale(11)}
+                      height={scale(11)}
+                      color={Colors.darkGray}
+                    />
+                    <Text style={styles.metaText}>
+                      {console.log(project.endDate)}
+                      {formatProjectDate(project.endDate)}
+                    </Text>
+                  </View>
+                  <View style={styles.statusWrapper}>
                     <StatusBadge
-                      text={project.priority}
+                      text={project.statusText}
+                    />
+                  </View>
+                </View>
+                <View style={styles.progressRow}>
+                  <View style={styles.progressBackground}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        {
+                          width: `${progress}%`,
+                          backgroundColor:
+                            progressColor,
+                        },
+                      ]}
                     />
 
                   </View>
 
-                  <Text style={styles.manager}>
-                    {manager
-                      ? `${manager.firstName} ${manager.lastName}`
-                      : "Unknown Manager"}
+                  <Text style={styles.progressText}>
+                    {progress}%
                   </Text>
 
                 </View>
 
-              </View>
-
-              {/* Project Meta */}
-              <View style={styles.metaRow}>
-
-                {/* Tasks */}
-                <View style={styles.metaItem}>
-
-                  <TasksIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-
-                  <Text style={styles.metaText}>
-                    {taskCount}
-                  </Text>
-
-                </View>
-
-                {/* Members */}
-                <View style={styles.metaItem}>
-
-                  <TeamIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-
-                  <Text style={styles.metaText}>
-                    {memberCount}
-                  </Text>
-
-                </View>
-
-                {/* End Date */}
-                <View style={styles.metaItem}>
-
-                  <CalendarIcon
-                    width={scale(11)}
-                    height={scale(11)}
-                    color={Colors.darkGray}
-                  />
-
-                  <Text style={styles.metaText}>
-                    {console.log(project.endDate)}
-                    {formatProjectDate(project.endDate)}
-                  </Text>
-
-                </View>
-
-                {/* Status */}
-                <View style={styles.statusWrapper}>
-
-                  <StatusBadge
-                    text={project.statusText}
-                  />
-
-                </View>
-
-              </View>
-              <View style={styles.progressRow}>
-
-                <View style={styles.progressBackground}>
-
-                  <View
-                    style={[
-                      styles.progressFill,
-                      {
-                        width: `${progress}%`,
-                        backgroundColor:
-                          progressColor,
-                      },
-                    ]}
-                  />
-
-                </View>
-
-                <Text style={styles.progressText}>
-                  {progress}%
-                </Text>
-
-              </View>
-
-            </TouchableOpacity>
-          );
-        }}
-      />
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
